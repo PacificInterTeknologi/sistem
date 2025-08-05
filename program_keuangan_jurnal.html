@@ -1,0 +1,2185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jurnal Transaksi - PACIFI PRO</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    /* CSS Variables */
+    :root {
+      --primary-color: #1a365d;
+      --secondary-color: #8B0000;
+      --accent-color: #3182ce;
+      --light-color: #ebf8ff;
+      --border-color: #e2e8f0;
+      --text-color: #2d3748;
+      --text-light: #718096;
+      --success-color: #38a169;
+      --danger-color: #e53e3e;
+      --warning-color: #dd6b20;
+      --sidebar-width: 260px;
+    }
+    
+    /* Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+    }
+    
+    /* Header Styles */
+    .header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      height: 70px;
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+    }
+    
+    .brand {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+    }
+    
+    .user-name {
+      margin-right: 15px;
+      font-size: 14px;
+    }
+    
+    .logout-btn {
+      background: var(--danger-color);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+    
+    .logout-btn:hover {
+      background: #c5221f;
+    }
+    
+    /* Sidebar Styles */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--primary-color);
+      color: white;
+      position: fixed;
+      height: calc(100vh - 70px);
+      left: 0;
+      top: 70px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+      overflow-y: auto;
+      z-index: 90;
+      transition: transform 0.3s;
+    }
+    
+    .sidebar-menu {
+      list-style: none;
+      padding: 20px 0;
+    }
+    
+    .sidebar-menu li {
+      margin-bottom: 5px;
+    }
+    
+    .sidebar-menu a {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      transition: all 0.3s;
+      border-left: 3px solid transparent;
+    }
+    
+    .sidebar-menu a:hover, .sidebar-menu a.active {
+      background-color: rgba(255,255,255,0.1);
+      color: white;
+      border-left: 3px solid var(--accent-color);
+    }
+    
+    .sidebar-menu i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+    
+    /* Main Content Styles */
+    .main-content {
+      margin-left: var(--sidebar-width);
+      padding: 100px 20px 20px;
+      min-height: 100vh;
+      width: calc(100% - var(--sidebar-width));
+    }
+    
+    .page-header {
+      margin-bottom: 30px;
+    }
+    
+    .page-title {
+      font-size: 28px;
+      color: var(--primary-color);
+      margin-bottom: 5px;
+    }
+    
+    .page-subtitle {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    /* Card Styles */
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    /* Form Styles */
+    .form-jurnal {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .form-group label {
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #555;
+    }
+    
+    .form-control {
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.2);
+    }
+    
+    .form-control.error {
+      border-color: var(--danger-color);
+      box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.2);
+    }
+    
+    .error-message {
+      color: var(--danger-color);
+      font-size: 12px;
+      margin-top: 5px;
+    }
+    
+    /* Button Styles */
+    .btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #0d0e1f;
+    }
+    
+    .btn-success {
+      background-color: var(--success-color);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background-color: #2d8e47;
+    }
+    
+    .btn-danger {
+      background-color: var(--danger-color);
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background-color: #c5221f;
+    }
+    
+    .btn-info {
+      background-color: var(--accent-color);
+      color: white;
+    }
+    
+    .btn-info:hover {
+      background-color: #3367d6;
+    }
+    
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+    
+    /* Table Styles */
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .data-table th {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 12px 15px;
+      text-align: left;
+      font-weight: 600;
+    }
+    
+    .data-table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .data-table tbody tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+    
+    .data-table tbody tr:hover {
+      background-color: #f0f0f0;
+    }
+    
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    
+    /* Menu Toggle */
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    
+    /* Notification */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      background-color: var(--success-color);
+      color: white;
+      border-radius: 5px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 1000;
+      transform: translateY(-100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    
+    .notification.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    .notification.error {
+      background-color: var(--danger-color);
+    }
+    
+    /* Balance Container */
+    .saldo-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .saldo-card {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+    
+    .saldo-card .title {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    
+    .saldo-card .amount {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+    
+    /* Badge Styles */
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    
+    .badge-debit {
+      background-color: #e3f2fd;
+      color: #0d47a1;
+    }
+    
+    .badge-kredit {
+      background-color: #ffebee;
+      color: #b71c1c;
+    }
+    
+    .badge-manual {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+    }
+    
+    .badge-penjualan {
+      background-color: #fff3e0;
+      color: #e65100;
+    }
+    
+    .badge-pelunasan {
+      background-color: #e8eaf6;
+      color: #303f9f;
+    }
+    
+    .badge-deleted {
+      background-color: #b71c1c;
+      color: white;
+    }
+    
+    .badge-active {
+      background-color: #38a169;
+      color: white;
+    }
+    
+    /* Refresh Container */
+    .refresh-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .refresh-btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .refresh-btn:hover {
+      background-color: #0d0e1f;
+    }
+    
+    .last-updated {
+      font-size: 12px;
+      color: #666;
+    }
+    
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      gap: 5px;
+    }
+    
+    .pagination button {
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      background: white;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    
+    .pagination button:hover {
+      background: var(--light-color);
+    }
+    
+    .pagination button.active {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+    
+    .pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    /* Search and Filter */
+    .search-filter-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .search-input {
+      flex-grow: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+    }
+    
+    .filter-select {
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+    }
+    
+    /* Info Box */
+    .info-box {
+      background-color: #e3f2fd;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 4px solid var(--accent-color);
+    }
+    
+    .info-box i {
+      color: var(--accent-color);
+      margin-right: 10px;
+    }
+    
+    .info-box strong {
+      color: var(--primary-color);
+    }
+    
+    /* Filter Container */
+    .filter-container {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    
+    .filter-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--primary-color);
+    }
+    
+    .filter-options {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-option {
+      padding: 8px 15px;
+      border-radius: 20px;
+      background-color: white;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .filter-option.active {
+      background-color: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+    
+    /* Sync Warning */
+    .sync-warning {
+      background-color: #fff3cd;
+      border: 1px solid #ffeeba;
+      color: #856404;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .sync-warning i {
+      color: #ffc107;
+      margin-right: 10px;
+      font-size: 20px;
+    }
+    
+    .sync-warning strong {
+      margin-right: 10px;
+    }
+    
+    .sync-btn {
+      background-color: var(--warning-color);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-left: auto;
+      transition: background 0.3s;
+    }
+    
+    .sync-btn:hover {
+      background-color: #e0a800;
+    }
+    
+    /* Checkbox */
+    .jurnal-checkbox {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    
+    /* Invoice Link */
+    .invoice-link {
+      color: var(--accent-color);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .invoice-link:hover {
+      text-decoration: underline;
+    }
+    
+    /* Paired Transaction */
+    .paired-transaction {
+      background-color: #f0f7ff;
+    }
+    
+    /* Deleted Transaction */
+    .deleted-transaction {
+      background-color: #ffebee !important;
+      color: #b71c1c !important;
+      opacity: 0.7;
+    }
+    
+    /* Media Queries */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      
+      .main-content {
+        margin-left: 0;
+        width: 100%;
+      }
+      
+      .menu-toggle {
+        display: block;
+      }
+      
+      .form-jurnal {
+        grid-template-columns: 1fr;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .refresh-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      
+      .search-filter-container {
+        flex-direction: column;
+      }
+      
+      .pagination {
+        flex-wrap: wrap;
+      }
+      
+      .sync-warning {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .sync-btn {
+        margin-left: 0;
+        margin-top: 10px;
+      }
+    }
+    
+    /* Print Styles */
+    @media print {
+      .header, .sidebar, .action-buttons, .card:first-child, .refresh-container, 
+      .search-filter-container, .pagination, .info-box, .filter-container, .sync-warning {
+        display: none !important;
+      }
+      
+      .main-content {
+        margin-left: 0;
+        padding: 0;
+        width: 100%;
+      }
+      
+      .card {
+        box-shadow: none;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+      
+      .data-table th, .data-table td {
+        padding: 8px;
+        font-size: 12px;
+      }
+      
+      .data-table th:first-child,
+      .data-table td:first-child {
+        display: none;
+      }
+      
+      .data-table th:last-child,
+      .data-table td:last-child {
+        display: none;
+      }
+      
+      .page-header {
+        margin-bottom: 15px;
+      }
+      
+      .page-title {
+        font-size: 20px;
+      }
+      
+      .jurnal-checkbox, #selectAll {
+        display: none !important;
+      }
+      
+      .deleted-transaction {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header Section -->
+  <div class="header">
+    <div class="logo-container">
+      <button class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="brand">PACIFI PRO</div>
+    </div>
+    <div class="user-info">
+      <div class="user-name" id="userWelcome">Loading...</div>
+      <button class="logout-btn" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </div>
+  
+  <!-- Sidebar Section -->
+  <div class="sidebar" id="sidebar">
+    <ul class="sidebar-menu">
+      <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+      <li><a href="pelanggan.html"><i class="fas fa-users"></i> Data Pelanggan</a></li>
+      <li><a href="jenis-invoice.html"><i class="fas fa-file-alt"></i> Jenis Invoice</a></li>
+      <li><a href="invoice.html"><i class="fas fa-receipt"></i> Invoice</a></li>
+      <li><a href="laporan-penjualan.html"><i class="fas fa-chart-line"></i> Laporan Penjualan</a></li>
+      <li><a href="program_keuangan_akun.html"><i class="fas fa-coins"></i> Input Akun</a></li>
+      <li><a href="program_keuangan_jurnal.html" class="active"><i class="fas fa-book"></i> Jurnal</a></li>
+      <li><a href="program_keuangan_laporan.html"><i class="fas fa-chart-pie"></i> Laporan Keuangan</a></li>
+      <li><a href="laba_rugi.html"><i class="fas fa-chart-line"></i> Laba Rugi</a></li>
+      <li><a href="arus_kas.html"><i class="fas fa-money-bill-wave"></i> Arus Kas</a></li>
+      <li><a href="neraca.html"><i class="fas fa-balance-scale"></i> Neraca</a></li>
+      <li><a href="pengguna.html" id="linkPengguna" style="display: none;"><i class="fas fa-user-cog"></i> Manajemen Pengguna</a></li>
+    </ul>
+  </div>
+  
+  <!-- Main Content Section -->
+  <div class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">Jurnal Transaksi</h1>
+      <p class="page-subtitle">Catat semua transaksi keuangan perusahaan</p>
+    </div>
+    
+    <!-- Input Form Card -->
+    <div class="card">
+      <h2>Input Transaksi Jurnal</h2>
+      <form class="form-jurnal" id="formJurnal">
+        <div class="form-group">
+          <label for="tanggal">Tanggal</label>
+          <input type="date" id="tanggal" class="form-control" required>
+          <div class="error-message" id="tanggal-error"></div>
+        </div>
+        
+        <div class="form-group">
+          <label for="deskripsi">Deskripsi</label>
+          <input type="text" id="deskripsi" class="form-control" placeholder="Masukkan deskripsi transaksi" required>
+          <div class="error-message" id="deskripsi-error"></div>
+        </div>
+        
+        <div class="form-group">
+          <label for="akun">Akun</label>
+          <select id="akun" class="form-control" required>
+            <option value="">-- Pilih Akun --</option>
+            <optgroup label="Aset Lancar">
+              <option value="Kas">Kas</option>
+              <option value="Bank">Bank</option>
+              <option value="Piutang Usaha">Piutang Usaha</option>
+              <option value="Persediaan">Persediaan</option>
+            </optgroup>
+            <optgroup label="Aset Tidak Lancar">
+              <option value="Peralatan">Peralatan</option>
+              <option value="Investasi">Investasi</option>
+            </optgroup>
+            <optgroup label="Kewajiban Lancar">
+              <option value="Utang Usaha">Utang Usaha</option>
+              <option value="PPN Masukan">PPN Masukan</option>
+              <option value="PPh Pasal 23">PPh Pasal 23</option>
+            </optgroup>
+            <optgroup label="Kewajiban Jangka Panjang">
+              <option value="Utang Bank Jangka Panjang">Utang Bank Jangka Panjang</option>
+              <option value="Utang Pajak Tangguhan">Utang Pajak Tangguhan</option>
+            </optgroup>
+            <optgroup label="Ekuitas">
+              <option value="Modal Saham">Modal Saham</option>
+              <option value="Tambahan Modal Disetor">Tambahan Modal Disetor</option>
+              <option value="Laba Ditahan">Laba Ditahan</option>
+            </optgroup>
+            <optgroup label="Pendapatan">
+              <option value="Pendapatan Jasa">Pendapatan Jasa</option>
+              <option value="Pendapatan Lainnya">Pendapatan Lainnya</option>
+            </optgroup>
+            <optgroup label="Beban">
+              <option value="Biaya Operasional">Biaya Operasional</option>
+              <option value="Beban Gaji">Beban Gaji</option>
+              <option value="Beban Sewa">Beban Sewa</option>
+              <option value="Beban Listrik">Beban Listrik</option>
+              <option value="Beban Telepon">Beban Telepon</option>
+            </optgroup>
+          </select>
+          <div class="error-message" id="akun-error"></div>
+        </div>
+        
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" class="form-control" required>
+            <option value="">-- Pilih Status --</option>
+            <option value="debit">Debit</option>
+            <option value="kredit">Kredit</option>
+          </select>
+          <div class="error-message" id="status-error"></div>
+        </div>
+        
+        <div class="form-group">
+          <label for="jumlah">Jumlah (Rp)</label>
+          <input type="number" id="jumlah" class="form-control" placeholder="0" min="0" step="0.01" required>
+          <div class="error-message" id="jumlah-error"></div>
+        </div>
+        
+        <div class="form-group" style="display: flex; align-items: flex-end;">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Simpan
+          </button>
+        </div>
+      </form>
+    </div>
+    
+    <!-- Account Balance Card -->
+    <div class="card">
+      <div class="refresh-container">
+        <h2>Saldo Akun</h2>
+        <div>
+          <button class="refresh-btn" onclick="refreshData()">
+            <i class="fas fa-sync-alt"></i> Refresh
+          </button>
+          <span class="last-updated" id="lastUpdated">Terakhir diperbarui: -</span>
+        </div>
+      </div>
+      <div class="saldo-container" id="saldoContainer">
+        <!-- Saldo akun akan ditampilkan di sini -->
+      </div>
+    </div>
+    
+    <!-- Journal Data Card -->
+    <div class="card">
+      <div class="refresh-container">
+        <h2>Data Jurnal</h2>
+        <div>
+          <button class="refresh-btn" onclick="refreshData()">
+            <i class="fas fa-sync-alt"></i> Refresh
+          </button>
+          <span class="last-updated" id="lastUpdatedTable">Terakhir diperbarui: -</span>
+        </div>
+      </div>
+      
+      <!-- Sync Warning -->
+      <div class="sync-warning" id="syncWarning" style="display: none;">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div>
+          <strong>Peringatan:</strong> Data laporan keuangan tidak sinkron dengan jurnal. 
+          Silakan sinkronkan data untuk memastikan konsistensi.
+        </div>
+        <button class="sync-btn" onclick="sinkronkanData()">
+          <i class="fas fa-sync-alt"></i> Sinkronkan Data
+        </button>
+      </div>
+      
+      <!-- Info Box -->
+      <div class="info-box">
+        <i class="fas fa-info-circle"></i>
+        <strong>Informasi:</strong> Jurnal menampilkan transaksi manual dan transaksi otomatis dari data penjualan. 
+        Setiap penjualan dan pelunasan akan otomatis dicatat di jurnal dengan tanggal yang sesuai.
+      </div>
+      
+      <!-- Filter Container for Source -->
+      <div class="filter-container">
+        <div class="filter-title">Filter Sumber Transaksi</div>
+        <div class="filter-options">
+          <div class="filter-option active" onclick="filterBySource('all')">Semua</div>
+          <div class="filter-option" onclick="filterBySource('manual')">Manual</div>
+          <div class="filter-option" onclick="filterBySource('penjualan')">Penjualan</div>
+          <div class="filter-option" onclick="filterBySource('pelunasan')">Pelunasan</div>
+        </div>
+      </div>
+      
+      <!-- Filter Container for Status -->
+      <div class="filter-container">
+        <div class="filter-title">Filter Status Data</div>
+        <div class="filter-options">
+          <div class="filter-option active" onclick="filterByStatus('active')">Aktif</div>
+          <div class="filter-option" onclick="filterByStatus('deleted')">Terhapus</div>
+          <div class="filter-option" onclick="filterByStatus('all')">Semua</div>
+        </div>
+      </div>
+      
+      <!-- Search and Filter -->
+      <div class="search-filter-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Cari berdasarkan deskripsi atau akun...">
+        <select id="filterAkun" class="filter-select">
+          <option value="">Semua Akun</option>
+          <option value="Kas">Kas</option>
+          <option value="Bank">Bank</option>
+          <option value="Piutang Usaha">Piutang Usaha</option>
+          <option value="Persediaan">Persediaan</option>
+          <option value="Peralatan">Peralatan</option>
+          <option value="Utang Usaha">Utang Usaha</option>
+          <option value="Modal Saham">Modal Saham</option>
+          <option value="Pendapatan Jasa">Pendapatan Jasa</option>
+          <option value="Biaya Operasional">Biaya Operasional</option>
+          <option value="Beban Gaji">Beban Gaji</option>
+        </select>
+        <select id="filterStatus" class="filter-select">
+          <option value="">Semua Status</option>
+          <option value="debit">Debit</option>
+          <option value="kredit">Kredit</option>
+        </select>
+        <button class="btn btn-primary" onclick="applyFilters()">
+          <i class="fas fa-filter"></i> Filter
+        </button>
+      </div>
+      
+      <!-- Table Container -->
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+              <th>No</th>
+              <th>Tanggal</th>
+              <th>Deskripsi</th>
+              <th>Akun</th>
+              <th>Status</th>
+              <th>Debit (Rp)</th>
+              <th>Kredit (Rp)</th>
+              <th>Sumber</th>
+              <th>Status Data</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tabelJurnal">
+            <!-- Data jurnal akan ditampilkan di sini -->
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Pagination -->
+      <div class="pagination" id="jurnalPagination">
+        <!-- Pagination akan ditampilkan di sini -->
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button class="btn btn-success" onclick="exportExcel()">
+          <i class="fas fa-file-excel"></i> Export Excel
+        </button>
+        <button class="btn btn-info" onclick="exportPDF()">
+          <i class="fas fa-file-pdf"></i> Export PDF
+        </button>
+        <button class="btn btn-primary" onclick="window.print()">
+          <i class="fas fa-print"></i> Cetak
+        </button>
+        <button class="btn btn-danger" onclick="hapusYangDipilih()">
+          <i class="fas fa-trash"></i> Hapus yang Dipilih
+        </button>
+        <button class="btn btn-warning" onclick="restoreYangDipilih()" id="restoreBtn" style="display: none;">
+          <i class="fas fa-undo"></i> Pulihkan yang Dipilih
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Notification Element -->
+  <div id="notification" class="notification"></div>
+  
+  <script>
+    // ============ GLOBAL VARIABLES ============
+    let jurnalCurrentPage = 1;
+    const jurnalItemsPerPage = 15;
+    let jurnalFilteredData = [];
+    let currentSourceFilter = 'all'; // Menyimpan filter sumber yang aktif
+    let currentStatusFilter = 'active'; // Menyimpan filter status yang aktif
+    
+    // ============ AUDIT TRAIL INTEGRATION ============
+    function logActivity(action, module, detail) {
+      if (window.auditTrail) {
+        window.auditTrail.log({
+          action: action,
+          module: module,
+          detail: detail,
+          timestamp: new Date().toISOString()
+        });
+      }
+    }
+    
+    // Override showNotification to add audit logging
+    if (!window.originalShowNotification) {
+      window.originalShowNotification = window.showNotification;
+    }
+    
+    window.showNotification = function(message, type = 'success') {
+      if (window.originalShowNotification) {
+        window.originalShowNotification(message, type);
+      }
+      
+      // Log notification as audit activity
+      const user = JSON.parse(localStorage.getItem('currentUser'));
+      if (user) {
+        logActivity(type === 'error' ? 'error' : 'info', 'System', `Notification: ${message}`);
+      }
+    };
+    
+    // ============ DUPLICATE CHECKING FUNCTIONS ============
+    function isInvoiceExist(noInvoice, jenisTransaksi, existingData) {
+      return existingData.some(item => 
+        item.fromPenjualan && 
+        item.noInvoice === noInvoice && 
+        item.jenisTransaksi === jenisTransaksi
+      );
+    }
+    
+    function cleanDuplicateJurnalEntries() {
+      const jurnalData = JSON.parse(localStorage.getItem("dataJurnal")) || [];
+      const dataPenjualan = JSON.parse(localStorage.getItem("dataPenjualan")) || [];
+      
+      // Buat set untuk melacak invoice yang sudah ada
+      const existingInvoices = new Set();
+      
+      // Bersihkan duplikat di data jurnal
+      const cleanedJurnalData = jurnalData.filter(item => {
+        if (item.fromPenjualan && item.noInvoice) {
+          const key = `${item.noInvoice}-${item.jenisTransaksi}`;
+          if (existingInvoices.has(key)) {
+            return false; // Hapus duplikat
+          }
+          existingInvoices.add(key);
+        }
+        return true;
+      });
+      
+      // Simpan data yang sudah dibersihkan
+      if (cleanedJurnalData.length !== jurnalData.length) {
+        localStorage.setItem("dataJurnal", JSON.stringify(cleanedJurnalData));
+        console.log(`Dihapus ${jurnalData.length - cleanedJurnalData} entri duplikat`);
+      }
+      
+      return cleanedJurnalData;
+    }
+    
+    // ============ UI FUNCTIONS ============
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("active");
+    }
+    
+    function logout() {
+      const user = JSON.parse(localStorage.getItem("currentUser"));
+      if (user) {
+        logActivity('logout', 'Authentication', 'User logout');
+      }
+      
+      localStorage.removeItem("currentUser");
+      window.location.href = "index.html";
+    }
+    
+    function showNotification(message, type = 'success') {
+      const notification = document.getElementById("notification");
+      notification.textContent = message;
+      notification.className = `notification ${type}`;
+      notification.classList.add("show");
+      
+      setTimeout(() => {
+        notification.classList.remove("show");
+      }, 3000);
+    }
+    
+    // ============ USER AUTHORIZATION ============
+    function getCurrentUser() {
+      const user = localStorage.getItem("currentUser");
+      return user ? JSON.parse(user) : null;
+    }
+    
+    function isAuthorized(roles = []) {
+      const user = getCurrentUser();
+      return user && roles.includes(user.role);
+    }
+    
+    // ============ DATA FUNCTIONS ============
+    function refreshData() {
+      // Tampilkan animasi loading
+      const refreshButtons = document.querySelectorAll('.refresh-btn');
+      refreshButtons.forEach(btn => {
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+        btn.disabled = true;
+      });
+      
+      // Simulasi loading (dalam aplikasi nyata, ini bisa permintaan ke server)
+      setTimeout(() => {
+        // Update tampilan data jurnal
+        loadJurnal();
+        
+        // Update waktu terakhir diperbarui
+        const now = new Date();
+        const timeString = now.toLocaleString('id-ID');
+        document.getElementById('lastUpdated').textContent = `Terakhir diperbarui: ${timeString}`;
+        document.getElementById('lastUpdatedTable').textContent = `Terakhir diperbarui: ${timeString}`;
+        
+        // Kembalikan tombol refresh ke keadaan semula
+        refreshButtons.forEach(btn => {
+          btn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+          btn.disabled = false;
+        });
+        
+        // Tampilkan notifikasi
+        showNotification("Data berhasil diperbarui");
+      }, 1000);
+    }
+    
+    function hitungSaldoAkun() {
+      const jurnalData = JSON.parse(localStorage.getItem("dataJurnal")) || [];
+      const dataPenjualan = JSON.parse(localStorage.getItem("dataPenjualan")) || [];
+      const saldoContainer = document.getElementById("saldoContainer");
+      saldoContainer.innerHTML = "";
+      
+      // Daftar akun yang akan ditampilkan saldonya
+      const daftarAkun = [
+        { nama: "Kas", id: "kas" },
+        { nama: "Bank", id: "bank" },
+        { nama: "Piutang Usaha", id: "piutangUsaha" },
+        { nama: "Persediaan", id: "persediaan" },
+        { nama: "Peralatan", id: "peralatan" },
+        { nama: "Utang Usaha", id: "utangUsaha" },
+        { nama: "Modal Saham", id: "modalSaham" },
+        { nama: "Pendapatan Jasa", id: "pendapatanJasa" }
+      ];
+      
+      // Hitung saldo untuk setiap akun
+      daftarAkun.forEach(akun => {
+        let saldo = 0;
+        
+        // Hitung dari data jurnal manual (hanya yang aktif)
+        jurnalData.forEach(entry => {
+          if (entry.akun === akun.nama && !entry.isDeleted) {
+            if (entry.debit) {
+              saldo += parseFloat(entry.debit);
+            }
+            if (entry.kredit) {
+              saldo -= parseFloat(entry.kredit);
+            }
+          }
+        });
+        
+        // Hitung dari data penjualan
+        dataPenjualan.forEach(penjualan => {
+          // Transaksi penjualan
+          if (akun.nama === "Kas" && penjualan.metodePembayaran === "Tunai") {
+            saldo += parseFloat(penjualan.total);
+          }
+          if (akun.nama === "Piutang Usaha" && penjualan.metodePembayaran !== "Tunai") {
+            saldo += parseFloat(penjualan.total);
+          }
+          if (akun.nama === "Pendapatan Jasa") {
+            saldo -= parseFloat(penjualan.total);
+          }
+          
+          // Transaksi pelunasan
+          if (penjualan.status === "Lunas" && penjualan.tanggalPelunasan) {
+            if (akun.nama === "Kas") {
+              saldo += parseFloat(penjualan.total);
+            }
+            if (akun.nama === "Piutang Usaha") {
+              saldo -= parseFloat(penjualan.total);
+            }
+          }
+        });
+        
+        // Tambahkan kartu saldo
+        saldoContainer.innerHTML += `
+          <div class="saldo-card">
+            <div class="title">${akun.nama}</div>
+            <div class="amount">Rp ${Math.abs(saldo).toLocaleString("id-ID")}</div>
+          </div>
+        `;
+      });
+    }
+    
+    function toggleSelectAll() {
+      const selectAll = document.getElementById("selectAll");
+      const checkboxes = document.querySelectorAll(".jurnal-checkbox");
+      
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAll.checked;
+      });
+    }
+    
+    // ============ FILTER FUNCTIONS ============
+    function filterBySource(source) {
+      // Update active filter option
+      const filterOptions = document.querySelectorAll('.filter-option');
+      filterOptions.forEach(option => {
+        option.classList.remove('active');
+      });
+      
+      if (source === 'all') {
+        filterOptions[0].classList.add('active');
+      } else if (source === 'manual') {
+        filterOptions[1].classList.add('active');
+      } else if (source === 'penjualan') {
+        filterOptions[2].classList.add('active');
+      } else if (source === 'pelunasan') {
+        filterOptions[3].classList.add('active');
+      }
+      
+      // Simpan filter yang aktif
+      currentSourceFilter = source;
+      
+      // Terapkan filter
+      applyFilters();
+    }
+    
+    function filterByStatus(status) {
+      // Update active filter option
+      const filterOptions = document.querySelectorAll('.filter-option');
+      filterOptions.forEach(option => {
+        option.classList.remove('active');
+      });
+      
+      if (status === 'active') {
+        filterOptions[0].classList.add('active');
+      } else if (status === 'deleted') {
+        filterOptions[1].classList.add('active');
+      } else if (status === 'all') {
+        filterOptions[2].classList.add('active');
+      }
+      
+      // Simpan filter yang aktif
+      currentStatusFilter = status;
+      
+      // Tampilkan/sembunyikan tombol restore
+      const restoreBtn = document.getElementById('restoreBtn');
+      if (status === 'deleted') {
+        restoreBtn.style.display = 'inline-flex';
+      } else {
+        restoreBtn.style.display = 'none';
+      }
+      
+      // Terapkan filter
+      applyFilters();
+    }
+    
+    function applyFilters() {
+      const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+      const filterAkun = document.getElementById("filterAkun").value;
+      const filterStatus = document.getElementById("filterStatus").value;
+      
+      // Ambil hanya data jurnal manual
+      let jurnalData = JSON.parse(localStorage.getItem("dataJurnal")) || [];
+      
+      // Bersihkan duplikat sebelum memproses
+      jurnalData = cleanDuplicateJurnalEntries();
+      
+      const dataPenjualan = JSON.parse(localStorage.getItem("dataPenjualan")) || [];
+      
+      // Bersihkan data jurnal dari penjualan yang sudah dihapus
+      const updatedJurnalData = jurnalData.filter(item => {
+        if (item.fromPenjualan && item.noInvoice) {
+          return dataPenjualan.some(p => p.noInvoice === item.noInvoice);
+        }
+        return true;
+      });
+      
+      // Simpan kembali data jurnal yang sudah dibersihkan
+      if (updatedJurnalData.length !== jurnalData.length) {
+        localStorage.setItem("dataJurnal", JSON.stringify(updatedJurnalData));
+      }
+      
+      // Gabungkan semua data
+      let combinedData = [];
+      
+      // Tambahkan data jurnal manual
+      if (currentSourceFilter === 'all' || currentSourceFilter === 'manual') {
+        combinedData = [...updatedJurnalData];
+      }
+      
+      // Set untuk melacak transaksi yang sudah ditambahkan
+      const addedTransactions = new Set();
+      
+      // Tambahkan data dari penjualan - satu entri per invoice dengan informasi lengkap
+      if (currentSourceFilter === 'all' || currentSourceFilter === 'penjualan') {
+        dataPenjualan.forEach(penjualan => {
+          const key = `${penjualan.noInvoice}-penjualan`;
+          
+          // Periksa apakah sudah ada di jurnal atau sudah ditambahkan
+          if (!isInvoiceExist(penjualan.noInvoice, 'penjualan', updatedJurnalData) && 
+              !addedTransactions.has(key)) {
+            
+            combinedData.push({
+              tanggal: penjualan.tanggal,
+              akun: "Penjualan",
+              keterangan: `Penjualan - ${penjualan.customer || penjualan.namaPelanggan || "Pelanggan"}`,
+              debit: penjualan.total,
+              kredit: 0,
+              fromPenjualan: true,
+              jenisTransaksi: "penjualan",
+              noInvoice: penjualan.noInvoice,
+              metodePembayaran: penjualan.metodePembayaran,
+              isSingleEntry: true // Tandai sebagai entri tunggal
+            });
+            
+            addedTransactions.add(key);
+          }
+        });
+      }
+      
+      // Tambahkan data pelunasan - satu entri per invoice dengan informasi lengkap
+      if (currentSourceFilter === 'all' || currentSourceFilter === 'pelunasan') {
+        dataPenjualan.forEach(penjualan => {
+          // Jika statusnya lunas, tambahkan entri untuk pelunasan
+          if (penjualan.status === "Lunas" && penjualan.tanggalPelunasan) {
+            const key = `${penjualan.noInvoice}-pelunasan`;
+            
+            // Periksa apakah sudah ada di jurnal atau sudah ditambahkan
+            if (!isInvoiceExist(penjualan.noInvoice, 'pelunasan', updatedJurnalData) && 
+                !addedTransactions.has(key)) {
+              
+              combinedData.push({
+                tanggal: penjualan.tanggalPelunasan,
+                akun: "Pelunasan",
+                keterangan: `Pelunasan Invoice ${penjualan.noInvoice} - ${penjualan.customer || penjualan.namaPelanggan || "Pelanggan"}`,
+                debit: penjualan.total,
+                kredit: 0,
+                fromPenjualan: true,
+                jenisTransaksi: "pelunasan",
+                noInvoice: penjualan.noInvoice,
+                isSingleEntry: true // Tandai sebagai entri tunggal
+              });
+              
+              addedTransactions.add(key);
+            }
+          }
+        });
+      }
+      
+      // Terapkan filter
+      jurnalFilteredData = combinedData.filter(item => {
+        // Filter berdasarkan status (aktif/terhapus)
+        if (currentStatusFilter === 'active' && item.isDeleted) return false;
+        if (currentStatusFilter === 'deleted' && !item.isDeleted) return false;
+        
+        const matchesSearch = searchTerm === "" || 
+          item.keterangan.toLowerCase().includes(searchTerm) || 
+          item.akun.toLowerCase().includes(searchTerm);
+        
+        const matchesAkun = filterAkun === "" || item.akun === filterAkun;
+        const matchesStatus = filterStatus === "" || 
+          (filterStatus === "debit" && item.debit > 0) || 
+          (filterStatus === "kredit" && item.kredit > 0);
+        
+        return matchesSearch && matchesAkun && matchesStatus;
+      });
+      
+      // Urutkan data berdasarkan tanggal
+      jurnalFilteredData.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
+      
+      // Reset ke halaman pertama
+      jurnalCurrentPage = 1;
+      
+      // Update tampilan
+      renderJurnalTable();
+      setupJurnalPaginationControls();
+      
+      // Tampilkan jumlah hasil
+      const resultCount = jurnalFilteredData.length;
+      if (resultCount > 0) {
+        showNotification(`Ditemukan ${resultCount} data jurnal`);
+      } else {
+        showNotification("Tidak ada data yang sesuai dengan filter", "error");
+      }
+    }
+    
+    function loadJurnal() {
+      // Ambil data jurnal manual
+      let jurnalData = JSON.parse(localStorage.getItem("dataJurnal")) || [];
+      
+      // Bersihkan duplikat sebelum memproses
+      jurnalData = cleanDuplicateJurnalEntries();
+      
+      // Ambil data penjualan
+      const dataPenjualan = JSON.parse(localStorage.getItem("dataPenjualan")) || [];
+      
+      // Bersihkan data jurnal dari penjualan yang sudah dihapus
+      const updatedJurnalData = jurnalData.filter(item => {
+        if (item.fromPenjualan && item.noInvoice) {
+          return dataPenjualan.some(p => p.noInvoice === item.noInvoice);
+        }
+        return true;
+      });
+      
+      // Simpan kembali data jurnal yang sudah dibersihkan
+      if (updatedJurnalData.length !== jurnalData.length) {
+        localStorage.setItem("dataJurnal", JSON.stringify(updatedJurnalData));
+      }
+      
+      // Gabungkan semua data
+      let allData = [];
+      
+      // Tambahkan data jurnal manual
+      if (currentSourceFilter === 'all' || currentSourceFilter === 'manual') {
+        allData = [...updatedJurnalData];
+      }
+      
+      // Set untuk melacak transaksi yang sudah ditambahkan
+      const addedTransactions = new Set();
+      
+      // Tambahkan data dari penjualan - satu entri per invoice dengan informasi lengkap
+      if (currentSourceFilter === 'all' || currentSourceFilter === 'penjualan') {
+        dataPenjualan.forEach(penjualan => {
+          const key = `${penjualan.noInvoice}-penjualan`;
+          
+          // Periksa apakah sudah ada di jurnal atau sudah ditambahkan
+          if (!isInvoiceExist(penjualan.noInvoice, 'penjualan', updatedJurnalData) && 
+              !addedTransactions.has(key)) {
+            
+            allData.push({
+              tanggal: penjualan.tanggal,
+              akun: "Penjualan",
+              keterangan: `Penjualan - ${penjualan.customer || penjualan.namaPelanggan || "Pelanggan"}`,
+              debit: penjualan.total,
+              kredit: 0,
+              fromPenjualan: true,
+              jenisTransaksi: "penjualan",
+              noInvoice: penjualan.noInvoice,
+              metodePembayaran: penjualan.metodePembayaran,
+              isSingleEntry: true // Tandai sebagai entri tunggal
+            });
+            
+            addedTransactions.add(key);
+          }
+        });
+      }
+      
+      // Tambahkan data pelunasan - satu entri per invoice dengan informasi lengkap
+      if (currentSourceFilter === 'all' || currentSourceFilter === 'pelunasan') {
+        dataPenjualan.forEach(penjualan => {
+          // Jika statusnya lunas, tambahkan entri untuk pelunasan
+          if (penjualan.status === "Lunas" && penjualan.tanggalPelunasan) {
+            const key = `${penjualan.noInvoice}-pelunasan`;
+            
+            // Periksa apakah sudah ada di jurnal atau sudah ditambahkan
+            if (!isInvoiceExist(penjualan.noInvoice, 'pelunasan', updatedJurnalData) && 
+                !addedTransactions.has(key)) {
+              
+              allData.push({
+                tanggal: penjualan.tanggalPelunasan,
+                akun: "Pelunasan",
+                keterangan: `Pelunasan Invoice ${penjualan.noInvoice} - ${penjualan.customer || penjualan.namaPelanggan || "Pelanggan"}`,
+                debit: penjualan.total,
+                kredit: 0,
+                fromPenjualan: true,
+                jenisTransaksi: "pelunasan",
+                noInvoice: penjualan.noInvoice,
+                isSingleEntry: true // Tandai sebagai entri tunggal
+              });
+              
+              addedTransactions.add(key);
+            }
+          }
+        });
+      }
+      
+      // Urutkan data berdasarkan tanggal
+      allData.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
+      
+      // Simpan data yang sudah difilter
+      jurnalFilteredData = allData;
+      
+      // Tampilkan data di tabel
+      renderJurnalTable();
+      setupJurnalPaginationControls();
+      
+      // Update saldo akun
+      hitungSaldoAkun();
+      
+      // Cek sinkronisasi dengan laporan keuangan
+      cekSinkronisasi();
+    }
+    
+    function renderJurnalTable() {
+      const tbody = document.getElementById("tabelJurnal");
+      tbody.innerHTML = "";
+      
+      const startIndex = (jurnalCurrentPage - 1) * jurnalItemsPerPage;
+      const endIndex = startIndex + jurnalItemsPerPage;
+      const pageData = jurnalFilteredData.slice(startIndex, endIndex);
+      
+      if (pageData.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="11" style="text-align: center; padding: 20px;">
+              Tidak ada data jurnal
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      pageData.forEach((item, i) => {
+        const actualIndex = startIndex + i;
+        const debit = item.debit ? "Rp " + parseFloat(item.debit).toLocaleString("id-ID") : "-";
+        const kredit = item.kredit ? "Rp " + parseFloat(item.kredit).toLocaleString("id-ID") : "-";
+        
+        let badgeSource = '';
+        if (item.fromPenjualan) {
+          if (item.jenisTransaksi === 'penjualan') {
+            badgeSource = '<span class="badge badge-penjualan">Penjualan</span>';
+          } else if (item.jenisTransaksi === 'pelunasan') {
+            badgeSource = '<span class="badge badge-pelunasan">Pelunasan</span>';
+          }
+        } else {
+          badgeSource = '<span class="badge badge-manual">Manual</span>';
+        }
+        
+        // Badge status data (aktif/terhapus)
+        let badgeStatus = '';
+        if (item.isDeleted) {
+          badgeStatus = '<span class="badge badge-deleted">Terhapus</span>';
+        } else {
+          badgeStatus = '<span class="badge badge-active">Aktif</span>';
+        }
+        
+        // Tampilkan informasi tambahan untuk entri dari penjualan
+        let additionalInfo = '';
+        if (item.fromPenjualan && item.noInvoice) {
+          additionalInfo = `<br><small>Invoice: <a href="invoice.html" class="invoice-link">${item.noInvoice}</a></small>`;
+          if (item.metodePembayaran) {
+            additionalInfo += `<br><small>Metode: ${item.metodePembayaran}</small>`;
+          }
+        }
+        
+        // Tambahkan kelas untuk transaksi yang dihapus
+        const rowClass = item.isDeleted ? 'class="deleted-transaction"' : '';
+        
+        tbody.innerHTML += `
+          <tr ${rowClass}>
+            <td>
+              ${isAuthorized(["admin", "staff"]) && !item.fromPenjualan ? 
+                `<input type="checkbox" class="jurnal-checkbox" value="${actualIndex}">` : 
+                ""}
+            </td>
+            <td>${actualIndex + 1}</td>
+            <td>${item.tanggal}</td>
+            <td>${item.keterangan}${additionalInfo}</td>
+            <td>${item.akun}</td>
+            <td>
+              <span class="badge ${item.debit ? 'badge-debit' : 'badge-kredit'}">
+                ${item.debit ? 'DEBIT' : 'KREDIT'}
+              </span>
+            </td>
+            <td>${debit}</td>
+            <td>${kredit}</td>
+            <td>${badgeSource}</td>
+            <td>${badgeStatus}</td>
+            <td>
+              ${isAuthorized(["admin", "staff"]) && !item.fromPenjualan ? 
+                (item.isDeleted ? 
+                  `<button class="btn btn-success btn-sm" onclick="restoreJurnal(${actualIndex})">
+                    <i class="fas fa-undo"></i>
+                  </button>` :
+                  `<button class="btn btn-danger btn-sm" onclick="hapusJurnal(${actualIndex})">
+                    <i class="fas fa-trash"></i>
+                  </button>`) : 
+                item.fromPenjualan ? '<small><i>Dari Sistem</i></small>' : ""}
+            </td>
+          </tr>
+        `;
+      });
+    }
+    
+    function setupJurnalPaginationControls() {
+      const pagination = document.getElementById("jurnalPagination");
+      pagination.innerHTML = "";
+      
+      const totalPages = Math.ceil(jurnalFilteredData.length / jurnalItemsPerPage);
+      
+      if (totalPages <= 1) return;
+      
+      // Previous button
+      const prevBtn = document.createElement("button");
+      prevBtn.innerHTML = "<i class='fas fa-chevron-left'></i>";
+      prevBtn.disabled = jurnalCurrentPage === 1;
+      prevBtn.onclick = () => {
+        if (jurnalCurrentPage > 1) {
+          jurnalCurrentPage--;
+          renderJurnalTable();
+          setupJurnalPaginationControls();
+        }
+      };
+      pagination.appendChild(prevBtn);
+      
+      // Page number buttons
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= jurnalCurrentPage - 2 && i <= jurnalCurrentPage + 2)) {
+          const pageBtn = document.createElement("button");
+          pageBtn.textContent = i;
+          pageBtn.className = i === jurnalCurrentPage ? "active" : "";
+          pageBtn.onclick = () => {
+            jurnalCurrentPage = i;
+            renderJurnalTable();
+            setupJurnalPaginationControls();
+          };
+          pagination.appendChild(pageBtn);
+        } else if (i === jurnalCurrentPage - 3 || i === jurnalCurrentPage + 3) {
+          const span = document.createElement("span");
+          span.textContent = "...";
+          pagination.appendChild(span);
+        }
+      }
+      
+      // Next button
+      const nextBtn = document.createElement("button");
+      nextBtn.innerHTML = "<i class='fas fa-chevron-right'></i>";
+      nextBtn.disabled = jurnalCurrentPage === totalPages;
+      nextBtn.onclick = () => {
+        if (jurnalCurrentPage < totalPages) {
+          jurnalCurrentPage++;
+          renderJurnalTable();
+          setupJurnalPaginationControls();
+        }
+      };
+      pagination.appendChild(nextBtn);
+      
+      // Items per page selector
+      const itemsPerPageContainer = document.createElement("div");
+      itemsPerPageContainer.style.marginLeft = "10px";
+      
+      const label = document.createElement("span");
+      label.textContent = "Items per page: ";
+      itemsPerPageContainer.appendChild(label);
+      
+      const select = document.createElement("select");
+      select.className = "filter-select";
+      
+      [10, 15, 25, 50, 100].forEach(num => {
+        const option = document.createElement("option");
+        option.value = num;
+        option.textContent = num;
+        if (num === jurnalItemsPerPage) {
+          option.selected = true;
+        }
+        select.appendChild(option);
+      });
+      
+      select.onchange = () => {
+        jurnalItemsPerPage = parseInt(select.value);
+        jurnalCurrentPage = 1;
+        renderJurnalTable();
+        setupJurnalPaginationControls();
+      };
+      
+      itemsPerPageContainer.appendChild(select);
+      pagination.appendChild(itemsPerPageContainer);
+    }
+    
+    // ============ FORM FUNCTIONS ============
+    function validateForm() {
+      let isValid = true;
+      
+      // Validasi tanggal
+      const tanggal = document.getElementById("tanggal");
+      const tanggalError = document.getElementById("tanggal-error");
+      if (!tanggal.value) {
+        tanggal.classList.add("error");
+        tanggalError.textContent = "Tanggal harus diisi";
+        isValid = false;
+      } else {
+        tanggal.classList.remove("error");
+        tanggalError.textContent = "";
+      }
+      
+      // Validasi deskripsi
+      const deskripsi = document.getElementById("deskripsi");
+      const deskripsiError = document.getElementById("deskripsi-error");
+      if (!deskripsi.value.trim()) {
+        deskripsi.classList.add("error");
+        deskripsiError.textContent = "Deskripsi harus diisi";
+        isValid = false;
+      } else if (deskripsi.value.trim().length < 3) {
+        deskripsi.classList.add("error");
+        deskripsiError.textContent = "Deskripsi minimal 3 karakter";
+        isValid = false;
+      } else {
+        deskripsi.classList.remove("error");
+        deskripsiError.textContent = "";
+      }
+      
+      // Validasi akun
+      const akun = document.getElementById("akun");
+      const akunError = document.getElementById("akun-error");
+      if (!akun.value) {
+        akun.classList.add("error");
+        akunError.textContent = "Akun harus dipilih";
+        isValid = false;
+      } else {
+        akun.classList.remove("error");
+        akunError.textContent = "";
+      }
+      
+      // Validasi status
+      const status = document.getElementById("status");
+      const statusError = document.getElementById("status-error");
+      if (!status.value) {
+        status.classList.add("error");
+        statusError.textContent = "Status harus dipilih";
+        isValid = false;
+      } else {
+        status.classList.remove("error");
+        statusError.textContent = "";
+      }
+      
+      // Validasi jumlah
+      const jumlah = document.getElementById("jumlah");
+      const jumlahError = document.getElementById("jumlah-error");
+      if (!jumlah.value || isNaN(jumlah.value) || parseFloat(jumlah.value) <= 0) {
+        jumlah.classList.add("error");
+        jumlahError.textContent = "Jumlah harus diisi dan lebih dari 0";
+        isValid = false;
+      } else {
+        jumlah.classList.remove("error");
+        jumlahError.textContent = "";
+      }
+      
+      return isValid;
+    }
+    
+    function simpanJurnal(e) {
+      e.preventDefault();
+      
+      // Validasi form
+      if (!validateForm()) {
+        showNotification("Perbaiki kesalahan input terlebih dahulu", "error");
+        return;
+      }
+      
+      const tanggal = document.getElementById("tanggal").value;
+      const deskripsi = document.getElementById("deskripsi").value.trim();
+      const akun = document.getElementById("akun").value;
+      const status = document.getElementById("status").value;
+      const jumlah = parseFloat(document.getElementById("jumlah").value);
+      
+      // Bersihkan duplikat sebelum menyimpan
+      cleanDuplicateJurnalEntries();
+      
+      // Simpan ke dataJurnal
+      const jurnalData = JSON.parse(localStorage.getItem("dataJurnal")) || [];
+      const jurnalEntry = {
+        tanggal,
+        akun,
+        keterangan: deskripsi,
+        debit: status === "debit" ? jumlah : 0,
+        kredit: status === "kredit" ? jumlah : 0,
+        isDeleted: false, // Tandai sebagai data aktif
+        createdAt: new Date().toISOString()
+      };
+      
+      jurnalData.push(jurnalEntry);
+      localStorage.setItem("dataJurnal", JSON.stringify(jurnalData));
+      
+      // Simpan ke laporanKeuangan untuk integrasi dengan neraca
+      const laporanKeuangan = JSON.parse(localStorage.getItem("laporanKeuangan")) || [];
+      laporanKeuangan.push({
+        tanggal,
+        akun,
+        nilai: jumlah,
+        keterangan: deskripsi,
+        tipe: status,
+        isDeleted: false,
+        createdAt: new Date().toISOString()
+      });
+      localStorage.setItem("laporanKeuangan", JSON.stringify(laporanKeuangan));
+      
+      // Log activity
+      logActivity('create', 'Journal', `Created journal entry: ${deskripsi}`);
+      
+      // Reset form
+      document.getElementById("formJurnal").reset();
+      document.getElementById("tanggal").value = new Date().toISOString().split('T')[0];
+      
+      // Refresh tampilan
+      refreshData();
+      showNotification("Jurnal berhasil disimpan dan terhubung ke neraca!");
+    }
+    
+    // ============ DELETE FUNCTIONS ============
+    function hapusJurnal(index) {
+      const data = JSON.parse(localStorage.getItem("dataJurnal")) || [];
+      if (confirm("Hapus entri jurnal ini?")) {
+        // Tandai sebagai dihapus, bukan menghapus sepenuhnya
+        data[index].isDeleted = true;
+        data[index].deletedAt = new Date().toISOString();
+        localStorage.setItem("dataJurnal", JSON.stringify(data));
+        
+        // Update data di laporan keuangan
+        updateLaporanKeuanganAfterDelete(data[index]);
+        
+        // Log activity
+        logActivity('delete', 'Journal', `Deleted journal entry: ${data[index].keterangan}`);
+        
+        refreshData();
+        showNotification("Jurnal berhasil dihapus");
+      }
+    }
+    
+    function hapusYangDipilih() {
+      const checkboxes = document.querySelectorAll(".jurnal-checkbox:checked");
+      
+      if (checkboxes.length === 0) {
+        showNotification("Pilih minimal satu item untuk dihapus", "error");
+        return;
+      }
+      
+      if (confirm(`Hapus ${checkboxes.length} item jurnal yang dipilih?`)) {
+        const jurnalData = JSON.parse(localStorage.getItem("dataJurnal")) || [];
+        
+        // Tandai item sebagai dihapus, bukan menghapus sepenuhnya
+        checkboxes.forEach(checkbox => {
+          const index = parseInt(checkbox.value);
+          jurnalData[index].isDeleted = true;
+          jurnalData[index].deletedAt = new Date().toISOString();
+          
+          // Update data di laporan keuangan
+          updateLaporanKeuanganAfterDelete(jurnalData[index]);
+        });
+        
+        // Simpan data yang sudah diperbarui
+        localStorage.setItem("dataJurnal", JSON.stringify(jurnalData));
+        
+        // Log activity
+        logActivity('delete', 'Journal', `Deleted ${checkboxes.length} journal entries`);
+        
+        // Refresh tampilan
+        refreshData();
+        showNotification(`${checkboxes.length} item jurnal berhasil dihapus`);
+      }
+    }
+    
+    // ============ RESTORE FUNCTIONS ============
+    function restoreJurnal(index) {
+      const data = JSON.parse(localStorage.getItem("dataJurnal")) || [];
+      if (confirm("Pulihkan entri jurnal ini?")) {
+        // Tandai sebagai aktif kembali
+        data[index].isDeleted = false;
+        delete data[index].deletedAt;
+        localStorage.setItem("dataJurnal", JSON.stringify(data));
+        
+        // Update data di laporan keuangan
+        updateLaporanKeuanganAfterRestore(data[index]);
+        
+        // Log activity
+        logActivity('restore', 'Journal', `Restored journal entry: ${data[index].keterangan}`);
+        
+        refreshData();
+        showNotification("Jurnal berhasil dipulihkan");
+      }
+    }
+    
+    function restoreYangDipilih() {
+      const checkboxes = document.querySelectorAll(".jurnal-checkbox:checked");
+      
+      if (checkboxes.length === 0) {
+        showNotification("Pilih minimal satu item untuk dipulihkan", "error");
+        return;
+      }
+      
+      if (confirm(`Pulihkan ${checkboxes.length} item jurnal yang dipilih?`)) {
+        const jurnalData = JSON.parse(localStorage.getItem("dataJurnal")) || [];
+        
+        // Tandai item sebagai aktif kembali
+        checkboxes.forEach(checkbox => {
+          const index = parseInt(checkbox.value);
+          jurnalData[index].isDeleted = false;
+          delete jurnalData[index].deletedAt;
+          
+          // Update data di laporan keuangan
+          updateLaporanKeuanganAfterRestore(jurnalData[index]);
+        });
+        
+        // Simpan data yang sudah diperbarui
+        localStorage.setItem("dataJurnal", JSON.stringify(jurnalData));
+        
+        // Log activity
+        logActivity('restore', 'Journal', `Restored ${checkboxes.length} journal entries`);
+        
+        // Refresh tampilan
+        refreshData();
+        showNotification(`${checkboxes.length} item jurnal berhasil dipulihkan`);
+      }
+    }
+    
+    function updateLaporanKeuanganAfterDelete(deletedItem) {
+      let laporanKeuangan = JSON.parse(localStorage.getItem("laporanKeuangan")) || [];
+      
+      // Tandai item yang sesuai di laporan keuangan sebagai dihapus
+      laporanKeuangan.forEach(item => {
+        if (item.akun === deletedItem.akun && 
+            item.nilai === (deletedItem.debit || deletedItem.kredit) && 
+            item.tanggal === deletedItem.tanggal &&
+            item.keterangan === deletedItem.keterangan) {
+          item.isDeleted = true;
+          item.deletedAt = new Date().toISOString();
+        }
+      });
+      
+      localStorage.setItem("laporanKeuangan", JSON.stringify(laporanKeuangan));
+    }
+    
+    function updateLaporanKeuanganAfterRestore(restoredItem) {
+      let laporanKeuangan = JSON.parse(localStorage.getItem("laporanKeuangan")) || [];
+      
+      // Tandai item yang sesuai di laporan keuangan sebagai aktif kembali
+      laporanKeuangan.forEach(item => {
+        if (item.akun === restoredItem.akun && 
+            item.nilai === (restoredItem.debit || restoredItem.kredit) && 
+            item.tanggal === restoredItem.tanggal &&
+            item.keterangan === restoredItem.keterangan) {
+          item.isDeleted = false;
+          delete item.deletedAt;
+        }
+      });
+      
+      localStorage.setItem("laporanKeuangan", JSON.stringify(laporanKeuangan));
+    }
+    
+    // ============ EXPORT FUNCTIONS ============
+    function exportExcel() {
+      const table = document.querySelector(".data-table");
+      const wb = XLSX.utils.table_to_book(table, { sheet: "Jurnal" });
+      XLSX.writeFile(wb, "jurnal_transaksi.xlsx");
+      
+      // Log activity
+      logActivity('export', 'Journal', 'Exported journal data to Excel');
+      
+      showNotification("Jurnal berhasil diekspor ke Excel");
+    }
+    
+    function exportPDF() {
+      const element = document.querySelector(".data-table");
+      const opt = {
+        margin: 10,
+        filename: 'jurnal_transaksi.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      
+      html2pdf().set(opt).from(element).save();
+      
+      // Log activity
+      logActivity('export', 'Journal', 'Exported journal data to PDF');
+      
+      showNotification("Jurnal berhasil diekspor ke PDF");
+    }
+    
+    // ============ SYNC FUNCTIONS ============
+    function cekSinkronisasi() {
+      const jurnalData = JSON.parse(localStorage.getItem("dataJurnal")) || [];
+      const laporanKeuangan = JSON.parse(localStorage.getItem("laporanKeuangan")) || [];
+      const dataPenjualan = JSON.parse(localStorage.getItem("dataPenjualan")) || [];
+      
+      // Hitung total dari jurnal (manual + penjualan) - hanya yang aktif
+      let totalJurnal = 0;
+      
+      // Tambahkan dari jurnal manual
+      jurnalData.forEach(entry => {
+        if (!entry.isDeleted) {
+          if (entry.debit) {
+            totalJurnal += parseFloat(entry.debit);
+          }
+          if (entry.kredit) {
+            totalJurnal -= parseFloat(entry.kredit);
+          }
+        }
+      });
+      
+      // Tambahkan dari data penjualan
+      dataPenjualan.forEach(penjualan => {
+        // Transaksi penjualan
+        totalJurnal += parseFloat(penjualan.total);
+        totalJurnal -= parseFloat(penjualan.total);
+        
+        // Transaksi pelunasan
+        if (penjualan.status === "Lunas" && penjualan.tanggalPelunasan) {
+          totalJurnal += parseFloat(penjualan.total);
+          totalJurnal -= parseFloat(penjualan.total);
+        }
+      });
+      
+      // Hitung total dari laporan keuangan - hanya yang aktif
+      let totalLaporanKeuangan = 0;
+      laporanKeuangan.forEach(entry => {
+        if (!entry.isDeleted) {
+          if (entry.tipe === "debit") {
+            totalLaporanKeuangan += parseFloat(entry.nilai);
+          } else {
+            totalLaporanKeuangan -= parseFloat(entry.nilai);
+          }
+        }
+      });
+      
+      // Tampilkan peringatan jika tidak sinkron
+      const syncWarning = document.getElementById("syncWarning");
+      if (Math.abs(totalJurnal - totalLaporanKeuangan) > 0.01) {
+        syncWarning.style.display = "flex";
+      } else {
+        syncWarning.style.display = "none";
+      }
+    }
+    
+    function sinkronkanData() {
+      const jurnalData = JSON.parse(localStorage.getItem("dataJurnal")) || [];
+      const dataPenjualan = JSON.parse(localStorage.getItem("dataPenjualan")) || [];
+      
+      // Buat laporan keuangan baru dari jurnal dan data penjualan
+      const laporanKeuanganBaru = [];
+      
+      // Tambahkan dari jurnal manual - hanya yang aktif
+      jurnalData.forEach(entry => {
+        if (!entry.isDeleted) {
+          laporanKeuanganBaru.push({
+            tanggal: entry.tanggal,
+            akun: entry.akun,
+            nilai: entry.debit || entry.kredit,
+            keterangan: entry.keterangan,
+            tipe: entry.debit ? "debit" : "kredit",
+            isDeleted: false,
+            createdAt: entry.createdAt
+          });
+        }
+      });
+      
+      // Tambahkan dari data penjualan
+      dataPenjualan.forEach(penjualan => {
+        // Transaksi penjualan - pendapatan
+        laporanKeuanganBaru.push({
+          tanggal: penjualan.tanggal,
+          akun: "Pendapatan Jasa",
+          nilai: penjualan.total,
+          keterangan: `Penjualan - ${penjualan.customer || penjualan.namaPelanggan || "Pelanggan"}`,
+          tipe: "kredit",
+          noInvoice: penjualan.noInvoice,
+          isDeleted: false,
+          createdAt: new Date().toISOString()
+        });
+        
+        // Transaksi penjualan - kas/piutang
+        laporanKeuanganBaru.push({
+          tanggal: penjualan.tanggal,
+          akun: penjualan.metodePembayaran === "Tunai" ? "Kas" : "Piutang Usaha",
+          nilai: penjualan.total,
+          keterangan: `Penjualan - ${penjualan.customer || penjualan.namaPelanggan || "Pelanggan"}`,
+          tipe: "debit",
+          noInvoice: penjualan.noInvoice,
+          isDeleted: false,
+          createdAt: new Date().toISOString()
+        });
+        
+        // Transaksi pelunasan
+        if (penjualan.status === "Lunas" && penjualan.tanggalPelunasan) {
+          laporanKeuanganBaru.push({
+            tanggal: penjualan.tanggalPelunasan,
+            akun: "Kas",
+            nilai: penjualan.total,
+            keterangan: `Pelunasan Invoice ${penjualan.noInvoice} - ${penjualan.customer || penjualan.namaPelanggan || "Pelanggan"}`,
+            tipe: "debit",
+            noInvoice: penjualan.noInvoice,
+            isDeleted: false,
+            createdAt: new Date().toISOString()
+          });
+          
+          laporanKeuanganBaru.push({
+            tanggal: penjualan.tanggalPelunasan,
+            akun: "Piutang Usaha",
+            nilai: penjualan.total,
+            keterangan: `Pelunasan Invoice ${penjualan.noInvoice} - ${penjualan.customer || penjualan.namaPelanggan || "Pelanggan"}`,
+            tipe: "kredit",
+            noInvoice: penjualan.noInvoice,
+            isDeleted: false,
+            createdAt: new Date().toISOString()
+          });
+        }
+      });
+      
+      // Simpan laporan keuangan yang baru
+      localStorage.setItem("laporanKeuangan", JSON.stringify(laporanKeuanganBaru));
+      
+      // Refresh tampilan
+      refreshData();
+      
+      // Log activity
+      logActivity('sync', 'Journal', 'Synchronized journal data with financial reports');
+      
+      showNotification("Data berhasil disinkronkan");
+    }
+    
+    // ============ EVENT LISTENERS ============
+    document.getElementById("formJurnal").addEventListener("submit", simpanJurnal);
+    
+    document.getElementById("searchInput").addEventListener("keyup", function(event) {
+      if (event.key === "Enter") {
+        applyFilters();
+      }
+    });
+    
+    // ============ INITIALIZATION ============
+    window.onload = function() {
+      const user = getCurrentUser();
+      if (!user) {
+        showNotification("Silakan login terlebih dahulu", "error");
+        window.location.href = "index.html";
+        return;
+      }
+      
+      // Update user info dengan format yang konsisten dengan dashboard
+      document.getElementById("userWelcome").textContent = `Login sebagai: ${user.username} (${user.role})`;
+      
+      if (user.role === "admin") {
+        document.getElementById("linkPengguna").style.display = "block";
+      }
+      
+      // Set default date to today
+      document.getElementById("tanggal").value = new Date().toISOString().split('T')[0];
+      
+      // Bersihkan data jurnal dari penjualan yang sudah dihapus
+      const jurnalData = JSON.parse(localStorage.getItem("dataJurnal")) || [];
+      const dataPenjualan = JSON.parse(localStorage.getItem("dataPenjualan")) || [];
+      
+      const updatedJurnalData = jurnalData.filter(item => {
+        if (item.fromPenjualan && item.noInvoice) {
+          return dataPenjualan.some(p => p.noInvoice === item.noInvoice);
+        }
+        return true;
+      });
+      
+      if (updatedJurnalData.length !== jurnalData.length) {
+        localStorage.setItem("dataJurnal", JSON.stringify(updatedJurnalData));
+      }
+      
+      // Set default filter to show only active entries
+      filterByStatus('active');
+      
+      // Tampilkan data jurnal dan update waktu
+      refreshData();
+      
+      // Log activity
+      logActivity('view', 'Journal', 'User accessed journal page');
+    };
+  </script>
+</body>
+</html>

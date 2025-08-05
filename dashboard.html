@@ -1,0 +1,1939 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - PACIFIC PRO</title>
+  
+  <!-- External Libraries -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js for Data Visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Custom Styles -->
+  <style>
+    /* ===== ROOT VARIABLES ===== */
+    :root {
+      --primary-color: #1B1F3B;
+      --secondary-color: #8B0000;
+      --accent-color: #4285f4;
+      --success-color: #34a853;
+      --warning-color: #fbbc05;
+      --danger-color: #ea4335;
+      --light-color: #f8f9fa;
+      --border-color: #e0e0e0;
+      --text-color: #333;
+      --text-light: #666;
+      --sidebar-width: 260px;
+      --header-height: 70px;
+      --card-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      --card-hover-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      --transition-base: all 0.3s ease;
+      --radius-base: 8px;
+      --radius-lg: 12px;
+    }
+    
+    /* ===== RESET & BASE STYLES ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f7fa;
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+    }
+    
+    /* ===== HEADER STYLES ===== */
+    .header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      height: var(--header-height);
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .brand {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .user-name {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    .logout-btn {
+      background: var(--danger-color);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: var(--radius-base);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: var(--transition-base);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .logout-btn:hover {
+      background: #c5221f;
+      transform: translateY(-1px);
+    }
+    
+    /* ===== SIDEBAR STYLES ===== */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: white;
+      height: calc(100vh - var(--header-height));
+      position: fixed;
+      left: 0;
+      top: var(--header-height);
+      box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+      overflow-y: auto;
+      z-index: 900;
+      transition: transform 0.3s ease;
+    }
+    
+    .sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .sidebar-logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 15px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .sidebar-logo img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+    }
+    
+    .sidebar-brand {
+      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+    
+    .sidebar-user {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-light);
+    }
+    
+    .sidebar-menu {
+      list-style: none;
+      padding: 20px 0;
+    }
+    
+    .menu-item {
+      display: block;
+      padding: 12px 20px;
+      color: var(--text-color);
+      text-decoration: none;
+      transition: var(--transition-base);
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .menu-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--accent-color);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+    
+    .menu-item:hover {
+      background-color: var(--light-color);
+      color: var(--primary-color);
+    }
+    
+    .menu-item:hover::before {
+      transform: scaleY(1);
+    }
+    
+    .menu-item.active {
+      background-color: var(--light-color);
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+    
+    .menu-item.active::before {
+      transform: scaleY(1);
+    }
+    
+    .menu-item i {
+      width: 20px;
+      text-align: center;
+      font-size: 16px;
+    }
+    
+    /* ===== MAIN CONTENT STYLES ===== */
+    .main-content {
+      margin-left: var(--sidebar-width);
+      padding: calc(var(--header-height) + 30px) 30px 30px;
+      min-height: 100vh;
+      width: calc(100% - var(--sidebar-width));
+      transition: margin-left 0.3s ease;
+    }
+    
+    /* ===== PAGE HEADER ===== */
+    .page-header {
+      margin-bottom: 30px;
+    }
+    
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 8px;
+    }
+    
+    .page-subtitle {
+      color: var(--text-light);
+      font-size: 16px;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .menu-toggle {
+      display: none;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: var(--radius-base);
+      cursor: pointer;
+      font-size: 18px;
+      transition: var(--transition-base);
+    }
+    
+    .menu-toggle:hover {
+      background-color: #0d0e1f;
+    }
+    
+    .btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: var(--radius-base);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: var(--transition-base);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #0d0e1f;
+    }
+    
+    /* ===== DASHBOARD CARDS ===== */
+    .dashboard-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 25px;
+      box-shadow: var(--card-shadow);
+      transition: var(--transition-base);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--card-hover-shadow);
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-base);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      transition: var(--transition-base);
+    }
+    
+    .card:hover .card-icon {
+      transform: scale(1.1);
+    }
+    
+    .card-icon.primary { background: linear-gradient(135deg, var(--primary-color), #2d3748); }
+    .card-icon.success { background: linear-gradient(135deg, var(--success-color), #2f855a); }
+    .card-icon.warning { background: linear-gradient(135deg, var(--warning-color), #d69e2e); }
+    .card-icon.danger { background: linear-gradient(135deg, var(--danger-color), #c53030); }
+    
+    .card-value {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--primary-color);
+    }
+    
+    .card-change {
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .card-change.positive {
+      color: var(--success-color);
+    }
+    
+    .card-change.negative {
+      color: var(--danger-color);
+    }
+    
+    .card-change i {
+      font-size: 12px;
+    }
+    
+    .card-chart {
+      height: 60px;
+      margin-top: 15px;
+    }
+    
+    /* ===== CHARTS SECTION ===== */
+    .charts-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .chart-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 25px;
+      box-shadow: var(--card-shadow);
+    }
+    
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .chart-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    .chart-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .chart-btn {
+      background: none;
+      border: 1px solid var(--border-color);
+      padding: 5px 10px;
+      border-radius: var(--radius-base);
+      cursor: pointer;
+      font-size: 12px;
+      transition: var(--transition-base);
+    }
+    
+    .chart-btn:hover {
+      background: var(--light-color);
+    }
+    
+    .chart-btn.active {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+    
+    .chart-container {
+      position: relative;
+      height: 300px;
+    }
+    
+    /* ===== RECENT ACTIVITY ===== */
+    .recent-activity {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 25px;
+      box-shadow: var(--card-shadow);
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .activity-list {
+      list-style: none;
+    }
+    
+    .activity-item {
+      padding: 15px 0;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      transition: var(--transition-base);
+    }
+    
+    .activity-item:hover {
+      background: var(--light-color);
+      margin: 0 -25px;
+      padding: 15px 25px;
+    }
+    
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+    
+    .activity-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    
+    .activity-icon.create { background: var(--success-color); }
+    .activity-icon.update { background: var(--warning-color); }
+    .activity-icon.delete { background: var(--danger-color); }
+    .activity-icon.payment { background: var(--accent-color); }
+    
+    .activity-content {
+      flex: 1;
+    }
+    
+    .activity-title {
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: var(--text-color);
+    }
+    
+    .activity-time {
+      font-size: 12px;
+      color: var(--text-light);
+    }
+    
+    .activity-amount {
+      font-weight: 600;
+      color: var(--success-color);
+    }
+    
+    /* ===== NOTIFICATION STYLES ===== */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      background-color: var(--success-color);
+      color: white;
+      border-radius: var(--radius-base);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 2000;
+      transform: translateX(400px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      max-width: 300px;
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    
+    .notification.error {
+      background-color: var(--danger-color);
+    }
+    
+    .notification.warning {
+      background-color: var(--warning-color);
+    }
+    
+    /* ===== LOADING SPINNER ===== */
+    .loading-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-left: 8px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* ===== DEBUG INFO ===== */
+    .debug-info {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      z-index: 9999;
+      max-width: 300px;
+      display: none;
+    }
+    
+    /* ===== RESPONSIVE DESIGN ===== */
+    @media (max-width: 1200px) {
+      .charts-section {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 992px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      
+      .main-content {
+        margin-left: 0;
+        padding: calc(var(--header-height) + 20px) 20px 20px;
+        width: 100%;
+      }
+      
+      .menu-toggle {
+        display: block;
+      }
+      
+      .dashboard-cards {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .page-title {
+        font-size: 24px;
+      }
+      
+      .dashboard-cards {
+        grid-template-columns: 1fr;
+      }
+      
+      .card-value {
+        font-size: 24px;
+      }
+      
+      .header-actions {
+        flex-direction: column;
+        width: 100%;
+      }
+      
+      .user-info {
+        width: 100%;
+        justify-content: space-between;
+      }
+      
+      .activity-item {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .activity-icon {
+        align-self: flex-start;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .header {
+        padding: 10px 15px;
+      }
+      
+      .brand {
+        font-size: 20px;
+      }
+      
+      .user-name {
+        display: none;
+      }
+      
+      .main-content {
+        padding: calc(var(--header-height) + 15px) 15px 15px;
+      }
+      
+      .card {
+        padding: 20px;
+      }
+      
+      .card-value {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Skip to main content for accessibility -->
+  <a href="#main-content" class="sr-only">Skip to main content</a>
+  
+  <!-- Header -->
+  <header class="header">
+    <div class="logo-container">
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="brand">PACIFI PRO</div>
+    </div>
+    <div class="user-info">
+      <div class="user-name" id="userWelcome">Loading...</div>
+      <div class="user-avatar" id="userAvatar">AD</div>
+      <button class="logout-btn" onclick="logout()" aria-label="Logout">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </header>
+  
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <img src="tegline.png" alt="PACIFI PRO Logo">
+      </div>
+      <div class="sidebar-brand">PACIFI PRO</div>
+      <div class="sidebar-user" id="sidebarUser">Loading...</div>
+    </div>
+    
+    <nav class="sidebar-menu">
+      <a href="dashboard.html" class="menu-item active">
+        <i class="fas fa-home"></i> Dashboard
+      </a>
+      <a href="pelanggan.html" class="menu-item">
+        <i class="fas fa-users"></i> Data Pelanggan
+      </a>
+      <a href="jenis-invoice.html" class="menu-item">
+        <i class="fas fa-file-invoice"></i> Jenis Invoice
+      </a>
+      <a href="invoice.html" class="menu-item">
+        <i class="fas fa-receipt"></i> Invoice
+      </a>
+      <a href="laporan-penjualan.html" class="menu-item">
+        <i class="fas fa-chart-line"></i> Laporan Penjualan
+      </a>
+      <a href="program_keuangan_akun.html" class="menu-item">
+        <i class="fas fa-coins"></i> Input Akun
+      </a>
+      <a href="program_keuangan_jurnal.html" class="menu-item">
+        <i class="fas fa-book"></i> Jurnal
+      </a>
+      <a href="program_keuangan_laporan.html" class="menu-item">
+        <i class="fas fa-chart-pie"></i> Laporan Keuangan
+      </a>
+      <a href="neraca.html" class="menu-item">
+        <i class="fas fa-balance-scale"></i> Neraca
+      </a>
+      <a href="laba_rugi.html" class="menu-item">
+        <i class="fas fa-chart-line"></i> Laba Rugi
+      </a>
+      <a href="arus_kas.html" class="menu-item" id="arusKasLink">
+        <i class="fas fa-money-bill-wave"></i> Arus Kas
+      </a>
+      <a href="backup.html" class="menu-item">
+        <i class="fas fa-database"></i> Backup & Restore
+      </a>
+      <a href="audit-trail.html" class="menu-item">
+        <i class="fas fa-history"></i> Audit Trail
+      </a>
+      <a href="pengguna.html" class="menu-item" id="linkPengguna" style="display: none;">
+        <i class="fas fa-users-cog"></i> Manajemen Pengguna
+      </a>
+    </nav>
+  </aside>
+  
+  <!-- Main Content -->
+  <main class="main-content" id="main-content">
+    <div class="page-header">
+      <h1 class="page-title">Dashboard</h1>
+      <p class="page-subtitle">Selamat datang di sistem akuntansi PACIFI PRO</p>
+      
+      <div class="header-actions">
+        <button class="menu-toggle" onclick="toggleSidebar()">
+          <i class="fas fa-bars"></i> Menu
+        </button>
+        <button class="btn btn-primary" onclick="refreshData()">
+          <i class="fas fa-sync-alt"></i> Refresh Data
+        </button>
+      </div>
+    </div>
+    
+    <!-- Dashboard Cards -->
+    <section class="dashboard-cards" aria-label="Statistik Dashboard">
+      <article class="card">
+        <div class="card-header">
+          <h3 class="card-title">Total Pelanggan</h3>
+          <div class="card-icon primary">
+            <i class="fas fa-users"></i>
+          </div>
+        </div>
+        <div class="card-value" id="totalPelanggan">0</div>
+        <div class="card-change positive">
+          <i class="fas fa-arrow-up"></i>
+          <span>12% dari bulan lalu</span>
+        </div>
+        <div class="card-chart">
+          <canvas id="pelangganChart"></canvas>
+        </div>
+      </article>
+      
+      <article class="card">
+        <div class="card-header">
+          <h3 class="card-title">Total Invoice</h3>
+          <div class="card-icon success">
+            <i class="fas fa-file-invoice-dollar"></i>
+          </div>
+        </div>
+        <div class="card-value" id="totalInvoice">0</div>
+        <div class="card-change positive">
+          <i class="fas fa-arrow-up"></i>
+          <span>8% dari bulan lalu</span>
+        </div>
+        <div class="card-chart">
+          <canvas id="invoiceChart"></canvas>
+        </div>
+      </article>
+      
+      <article class="card">
+        <div class="card-header">
+          <h3 class="card-title">Pendapatan Bulan Ini</h3>
+          <div class="card-icon warning">
+            <i class="fas fa-money-bill-wave"></i>
+          </div>
+        </div>
+        <div class="card-value" id="pendapatanBulanIni">Rp 0</div>
+        <div class="card-change positive">
+          <i class="fas fa-arrow-up"></i>
+          <span>15% dari bulan lalu</span>
+        </div>
+        <div class="card-chart">
+          <canvas id="pendapatanChart"></canvas>
+        </div>
+      </article>
+      
+      <article class="card">
+        <div class="card-header">
+          <h3 class="card-title">Invoice Belum Lunas</h3>
+          <div class="card-icon danger">
+            <i class="fas fa-exclamation-circle"></i>
+          </div>
+        </div>
+        <div class="card-value" id="invoiceBelumLunas">0</div>
+        <div class="card-change negative">
+          <i class="fas fa-arrow-down"></i>
+          <span>5% dari bulan lalu</span>
+        </div>
+        <div class="card-chart">
+          <canvas id="belumLunasChart"></canvas>
+        </div>
+      </article>
+    </section>
+    
+    <!-- Charts Section -->
+    <section class="charts-section">
+      <article class="chart-card">
+        <div class="chart-header">
+          <h3 class="chart-title">Grafik Penjualan</h3>
+          <div class="chart-actions">
+            <button class="chart-btn active" onclick="changeChartPeriod('penjualan', 'minggu')">Minggu</button>
+            <button class="chart-btn" onclick="changeChartPeriod('penjualan', 'bulan')">Bulan</button>
+            <button class="chart-btn" onclick="changeChartPeriod('penjualan', 'tahun')">Tahun</button>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="penjualanLineChart"></canvas>
+        </div>
+      </article>
+      
+      <article class="chart-card">
+        <div class="chart-header">
+          <h3 class="chart-title">Distribusi Pendapatan</h3>
+          <div class="chart-actions">
+            <button class="chart-btn active" onclick="changeChartType('pie')">Pie</button>
+            <button class="chart-btn" onclick="changeChartType('doughnut')">Doughnut</button>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="pendapatanPieChart"></canvas>
+        </div>
+      </article>
+    </section>
+    
+    <!-- Recent Activity -->
+    <section class="recent-activity">
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="fas fa-history"></i> Aktivitas Terbaru
+        </h2>
+        <button class="btn btn-primary" onclick="loadMoreActivities()">
+          <i class="fas fa-plus"></i> Muat Lebih Banyak
+        </button>
+      </div>
+      <ul class="activity-list" id="activityList">
+        <!-- Activities will be loaded dynamically -->
+      </ul>
+    </section>
+  </main>
+  
+  <!-- Notification -->
+  <div id="notification" class="notification" role="alert" aria-live="polite"></div>
+  
+  <!-- Debug Info -->
+  <div id="debugInfo" class="debug-info"></div>
+  
+  <!-- JavaScript -->
+  <script>
+    // ===== DEBUGGING FUNCTION =====
+    function debug(message) {
+      console.log(message);
+      const debugInfo = document.getElementById('debugInfo');
+      if (debugInfo) {
+        debugInfo.style.display = 'block';
+        debugInfo.textContent = message;
+      }
+    }
+    
+    // ===== GLOBAL VARIABLES =====
+    let charts = {};
+    let currentChartPeriod = {
+      penjualan: 'minggu'
+    };
+    let activityPage = 1;
+    const activitiesPerPage = 5;
+    
+    // ===== INITIALIZATION =====
+    /**
+     * Initialize the dashboard
+     */
+    document.addEventListener('DOMContentLoaded', function() {
+      debug('DOM loaded, initializing dashboard...');
+      
+      try {
+        checkAuthentication();
+        setupEventListeners();
+        initializeCharts();
+        loadDashboardData();
+        loadRecentActivities();
+        
+        debug('Dashboard initialized successfully');
+        
+        // Set up auto-refresh
+        setInterval(refreshData, 300000); // Refresh every 5 minutes
+      } catch (error) {
+        debug('Error during initialization: ' + error.message);
+        showNotification("Terjadi kesalahan saat memuat dashboard", "error");
+      }
+    });
+    
+    // ===== AUTHENTICATION CHECK =====
+    /**
+     * Check if user is authenticated
+     */
+    function checkAuthentication() {
+      debug('Checking authentication...');
+      
+      try {
+        const currentUser = localStorage.getItem("currentUser");
+        debug('Current user from localStorage: ' + currentUser);
+        
+        if (!currentUser) {
+          debug('No current user found, redirecting to login...');
+          showNotification("Sesi telah berakhir. Silakan login kembali.", "error");
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 2000);
+          return;
+        }
+        
+        const user = JSON.parse(currentUser);
+        debug('User parsed successfully: ' + JSON.stringify(user));
+        updateUserInterface(user);
+      } catch (error) {
+        debug('Error parsing user data: ' + error.message);
+        showNotification("Terjadi kesalahan pada data pengguna", "error");
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 2000);
+      }
+    }
+    
+    /**
+     * Update user interface with user information
+     * @param {Object} user - User object
+     */
+    function updateUserInterface(user) {
+      debug('Updating UI with user data...');
+      
+      try {
+        // Update welcome message
+        document.getElementById("userWelcome").textContent = `${user.fullName} (${user.role})`;
+        document.getElementById("sidebarUser").textContent = `Login sebagai: ${user.username}`;
+        
+        // Update user avatar
+        const initials = user.fullName.split(' ').map(n => n[0]).join('').toUpperCase();
+        document.getElementById("userAvatar").textContent = initials;
+        
+        // Show admin link if user is admin
+        if (user.role === "admin") {
+          document.getElementById("linkPengguna").style.display = "block";
+        }
+        
+        debug('UI updated successfully');
+      } catch (error) {
+        debug('Error updating UI: ' + error.message);
+      }
+    }
+    
+    // ===== SIDEBAR MANAGEMENT =====
+    /**
+     * Toggle sidebar visibility
+     */
+    function toggleSidebar() {
+      debug('Toggling sidebar...');
+      const sidebar = document.getElementById("sidebar");
+      sidebar.classList.toggle("active");
+    }
+    
+    // ===== EVENT LISTENERS =====
+    /**
+     * Setup event listeners
+     */
+    function setupEventListeners() {
+      debug('Setting up event listeners...');
+      
+      try {
+        // Menu toggle
+        document.getElementById("menuToggle").addEventListener("click", toggleSidebar);
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+          // Ctrl/Cmd + R to refresh
+          if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+            e.preventDefault();
+            refreshData();
+          }
+          
+          // Escape to close sidebar
+          if (e.key === 'Escape') {
+            const sidebar = document.getElementById("sidebar");
+            if (sidebar.classList.contains("active")) {
+              sidebar.classList.remove("active");
+            }
+          }
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+          if (window.innerWidth > 992) {
+            document.getElementById("sidebar").classList.remove("active");
+          }
+          
+          // Resize charts
+          Object.values(charts).forEach(chart => {
+            if (chart) chart.resize();
+          });
+        });
+        
+        // Close sidebar when clicking outside
+        document.addEventListener('click', function(event) {
+          const sidebar = document.getElementById("sidebar");
+          const menuToggle = document.getElementById("menuToggle");
+          
+          if (window.innerWidth <= 992 && 
+              !sidebar.contains(event.target) && 
+              !menuToggle.contains(event.target) && 
+              sidebar.classList.contains("active")) {
+            sidebar.classList.remove("active");
+          }
+        });
+        
+        debug('Event listeners set up successfully');
+      } catch (error) {
+        debug('Error setting up event listeners: ' + error.message);
+      }
+    }
+    
+    // ===== DATA LOADING =====
+    /**
+     * Load all dashboard data
+     */
+    function loadDashboardData() {
+      debug('Loading dashboard data...');
+      
+      try {
+        // Load statistics
+        loadStatistics();
+        
+        // Load charts data
+        loadChartsData();
+        
+        // Update last refresh time
+        updateLastRefreshTime();
+        
+        showNotification("Data dashboard berhasil diperbarui", "success");
+        debug('Dashboard data loaded successfully');
+      } catch (error) {
+        debug('Error loading dashboard data: ' + error.message);
+        showNotification("Gagal memuat data dashboard", "error");
+      }
+    }
+    
+    /**
+     * Load dashboard statistics
+     */
+    function loadStatistics() {
+      debug('Loading statistics...');
+      
+      try {
+        // Load total pelanggan
+        const pelanggan = JSON.parse(localStorage.getItem("dataPelanggan")) || [];
+        const totalPelanggan = pelanggan.length;
+        document.getElementById("totalPelanggan").textContent = totalPelanggan.toLocaleString('id-ID');
+        debug('Total pelanggan: ' + totalPelanggan);
+        
+        // Load total invoice
+        const penjualan = JSON.parse(localStorage.getItem("dataPenjualan")) || [];
+        const totalInvoice = penjualan.length;
+        document.getElementById("totalInvoice").textContent = totalInvoice.toLocaleString('id-ID');
+        debug('Total invoice: ' + totalInvoice);
+        
+        // Load pendapatan bulan ini
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+        let pendapatan = 0;
+        
+        penjualan.forEach(invoice => {
+          try {
+            const invoiceDate = new Date(invoice.tanggal);
+            if (invoiceDate.getMonth() === currentMonth && invoiceDate.getFullYear() === currentYear) {
+              pendapatan += invoice.total || 0;
+            }
+          } catch (e) {
+            debug('Error processing invoice date: ' + e.message);
+          }
+        });
+        
+        document.getElementById("pendapatanBulanIni").textContent = `Rp ${pendapatan.toLocaleString('id-ID')}`;
+        debug('Pendapatan bulan ini: ' + pendapatan);
+        
+        // Load invoice belum lunas
+        const invoiceBelumLunas = penjualan.filter(invoice => 
+          invoice.status !== "Lunas" && invoice.status !== "Paid"
+        ).length;
+        document.getElementById("invoiceBelumLunas").textContent = invoiceBelumLunas.toLocaleString('id-ID');
+        debug('Invoice belum lunas: ' + invoiceBelumLunas);
+      } catch (error) {
+        debug('Error loading statistics: ' + error.message);
+        document.getElementById("totalPelanggan").textContent = "0";
+        document.getElementById("totalInvoice").textContent = "0";
+        document.getElementById("pendapatanBulanIni").textContent = "Rp 0";
+        document.getElementById("invoiceBelumLunas").textContent = "0";
+      }
+    }
+    
+    // ===== CHARTS INITIALIZATION =====
+    /**
+     * Initialize all charts
+     */
+    function initializeCharts() {
+      debug('Initializing charts...');
+      
+      try {
+        // Initialize mini charts for cards
+        initializeMiniCharts();
+        
+        // Initialize main charts
+        initializeMainCharts();
+        
+        debug('Charts initialized successfully');
+      } catch (error) {
+        debug('Error initializing charts: ' + error.message);
+      }
+    }
+    
+    /**
+     * Initialize mini charts for dashboard cards
+     */
+    function initializeMiniCharts() {
+      debug('Initializing mini charts...');
+      
+      try {
+        // Pelanggan mini chart
+        const pelangganCtx = document.getElementById('pelangganChart');
+        if (pelangganCtx) {
+          charts.pelanggan = new Chart(pelangganCtx.getContext('2d'), {
+            type: 'line',
+            data: {
+              labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+              datasets: [{
+                data: [12, 19, 15, 25, 22, 30],
+                borderColor: '#4285f4',
+                backgroundColor: 'rgba(66, 133, 244, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0
+              }]
+            },
+            options: getMiniChartOptions()
+          });
+        }
+        
+        // Invoice mini chart
+        const invoiceCtx = document.getElementById('invoiceChart');
+        if (invoiceCtx) {
+          charts.invoice = new Chart(invoiceCtx.getContext('2d'), {
+            type: 'line',
+            data: {
+              labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+              datasets: [{
+                data: [8, 12, 10, 18, 15, 22],
+                borderColor: '#34a853',
+                backgroundColor: 'rgba(52, 168, 83, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0
+              }]
+            },
+            options: getMiniChartOptions()
+          });
+        }
+        
+        // Pendapatan mini chart
+        const pendapatanCtx = document.getElementById('pendapatanChart');
+        if (pendapatanCtx) {
+          charts.pendapatan = new Chart(pendapatanCtx.getContext('2d'), {
+            type: 'bar',
+            data: {
+              labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+              datasets: [{
+                data: [65, 78, 90, 81, 96, 105],
+                backgroundColor: '#fbbc05',
+                borderRadius: 4
+              }]
+            },
+            options: getMiniChartOptions()
+          });
+        }
+        
+        // Belum lunas mini chart
+        const belumLunasCtx = document.getElementById('belumLunasChart');
+        if (belumLunasCtx) {
+          charts.belumLunas = new Chart(belumLunasCtx.getContext('2d'), {
+            type: 'line',
+            data: {
+              labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+              datasets: [{
+                data: [5, 3, 7, 2, 4, 1],
+                borderColor: '#ea4335',
+                backgroundColor: 'rgba(234, 67, 53, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0
+              }]
+            },
+            options: getMiniChartOptions()
+          });
+        }
+        
+        debug('Mini charts initialized successfully');
+      } catch (error) {
+        debug('Error initializing mini charts: ' + error.message);
+      }
+    }
+    
+    /**
+     * Get mini chart configuration options
+     */
+    function getMiniChartOptions() {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false }
+        },
+        scales: {
+          x: { display: false },
+          y: { display: false }
+        },
+        elements: {
+          point: { radius: 0 }
+        }
+      };
+    }
+    
+    /**
+     * Initialize main charts
+     */
+    function initializeMainCharts() {
+      debug('Initializing main charts...');
+      
+      try {
+        // Penjualan line chart
+        const penjualanLineCtx = document.getElementById('penjualanLineChart');
+        if (penjualanLineCtx) {
+          charts.penjualanLine = new Chart(penjualanLineCtx.getContext('2d'), {
+            type: 'line',
+            data: {
+              labels: [],
+              datasets: [{
+                label: 'Penjualan',
+                data: [],
+                borderColor: '#4285f4',
+                backgroundColor: 'rgba(66, 133, 244, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4
+              }]
+            },
+            options: getLineChartOptions()
+          });
+        }
+        
+        // Pendapatan pie chart
+        const pendapatanPieCtx = document.getElementById('pendapatanPieChart');
+        if (pendapatanPieCtx) {
+          charts.pendapatanPie = new Chart(pendapatanPieCtx.getContext('2d'), {
+            type: 'pie',
+            data: {
+              labels: ['Jasa', 'Produk', 'Lainnya'],
+              datasets: [{
+                data: [45, 35, 20],
+                backgroundColor: [
+                  '#4285f4',
+                  '#34a853',
+                  '#fbbc05'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+              }]
+            },
+            options: getPieChartOptions()
+          });
+        }
+        
+        debug('Main charts initialized successfully');
+      } catch (error) {
+        debug('Error initializing main charts: ' + error.message);
+      }
+    }
+    
+    /**
+     * Get line chart configuration options
+     */
+    function getLineChartOptions() {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#ddd',
+            borderWidth: 1,
+            cornerRadius: 4,
+            displayColors: false
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              display: false
+            }
+          },
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: 'rgba(0, 0, 0, 0.05)'
+            },
+            ticks: {
+              callback: function(value) {
+                return 'Rp ' + value.toLocaleString('id-ID');
+              }
+            }
+          }
+        },
+        interaction: {
+          mode: 'nearest',
+          axis: 'x',
+          intersect: false
+        }
+      };
+    }
+    
+    /**
+     * Get pie chart configuration options
+     */
+    function getPieChartOptions() {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 20,
+              usePointStyle: true,
+              font: {
+                size: 12
+              }
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#ddd',
+            borderWidth: 1,
+            cornerRadius: 4,
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.parsed;
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((value / total) * 100).toFixed(1);
+                return `${label}: ${percentage}%`;
+              }
+            }
+          }
+        }
+      }
+    };
+    
+    // ===== CHART DATA LOADING =====
+    /**
+     * Load data for all charts
+     */
+    function loadChartsData() {
+      debug('Loading charts data...');
+      
+      try {
+        loadPenjualanChartData();
+        loadPendapatanChartData();
+        debug('Charts data loaded successfully');
+      } catch (error) {
+        debug('Error loading charts data: ' + error.message);
+      }
+    }
+    
+    /**
+     * Load penjualan chart data based on selected period
+     */
+    function loadPenjualanChartData() {
+      debug('Loading penjualan chart data...');
+      
+      try {
+        const penjualan = JSON.parse(localStorage.getItem("dataPenjualan")) || [];
+        const period = currentChartPeriod.penjualan;
+        
+        let labels = [];
+        let data = [];
+        
+        if (period === 'minggu') {
+          // Last 7 days
+          for (let i = 6; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            labels.push(date.toLocaleDateString('id-ID', { weekday: 'short' }));
+            
+            const dayTotal = penjualan.filter(p => {
+              try {
+                const pDate = new Date(p.tanggal);
+                return pDate.toDateString() === date.toDateString();
+              } catch (e) {
+                return false;
+              }
+            }).reduce((sum, p) => sum + (p.total || 0), 0);
+            
+            data.push(dayTotal);
+          }
+        } else if (period === 'bulan') {
+          // Last 6 months
+          const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+          for (let i = 5; i >= 0; i--) {
+            const date = new Date();
+            date.setMonth(date.getMonth() - i);
+            labels.push(monthNames[date.getMonth()]);
+            
+            const monthTotal = penjualan.filter(p => {
+              try {
+                const pDate = new Date(p.tanggal);
+                return pDate.getMonth() === date.getMonth() && pDate.getFullYear() === date.getFullYear();
+              } catch (e) {
+                return false;
+              }
+            }).reduce((sum, p) => sum + (p.total || 0), 0);
+            
+            data.push(monthTotal);
+          }
+        } else {
+          // Last 5 years
+          for (let i = 4; i >= 0; i--) {
+            const year = new Date().getFullYear() - i;
+            labels.push(year.toString());
+            
+            const yearTotal = penjualan.filter(p => {
+              try {
+                const pDate = new Date(p.tanggal);
+                return pDate.getFullYear() === year;
+              } catch (e) {
+                return false;
+              }
+            }).reduce((sum, p) => sum + (p.total || 0), 0);
+            
+            data.push(yearTotal);
+          }
+        }
+        
+        if (charts.penjualanLine) {
+          charts.penjualanLine.data.labels = labels;
+          charts.penjualanLine.data.datasets[0].data = data;
+          charts.penjualanLine.update();
+        }
+        
+        debug('Penjualan chart data loaded successfully');
+      } catch (error) {
+        debug('Error loading penjualan chart data: ' + error.message);
+      }
+    }
+    
+    /**
+     * Load pendapatan distribution data
+     */
+    function loadPendapatanChartData() {
+      debug('Loading pendapatan chart data...');
+      
+      try {
+        const penjualan = JSON.parse(localStorage.getItem("dataPenjualan")) || [];
+        
+        // Calculate distribution by type
+        const distribution = {
+          'Jasa': 0,
+          'Produk': 0,
+          'Lainnya': 0
+        };
+        
+        penjualan.forEach(invoice => {
+          try {
+            const total = invoice.total || 0;
+            if (invoice.jenisTransaksi === 'js') {
+              distribution.Jasa += total;
+            } else if (invoice.jenisTransaksi === 'pg') {
+              distribution.Produk += total;
+            } else {
+              distribution.Lainnya += total;
+            }
+          } catch (e) {
+            debug('Error processing invoice for distribution: ' + e.message);
+          }
+        });
+        
+        if (charts.pendapatanPie) {
+          charts.pendapatanPie.data.datasets[0].data = [
+            distribution.Jasa,
+            distribution.Produk,
+            distribution.Lainnya
+          ];
+          charts.pendapatanPie.update();
+        }
+        
+        debug('Pendapatan chart data loaded successfully');
+      } catch (error) {
+        debug('Error loading pendapatan chart data: ' + error.message);
+      }
+    }
+    
+    // ===== CHART CONTROLS =====
+    /**
+     * Change chart period for penjualan chart
+     */
+    function changeChartPeriod(chart, period) {
+      debug('Changing chart period to: ' + period);
+      
+      try {
+        currentChartPeriod[chart] = period;
+        
+        // Update button states
+        const container = event.target.closest('.chart-actions');
+        if (container) {
+          container.querySelectorAll('.chart-btn').forEach(btn => {
+            btn.classList.remove('active');
+          });
+          event.target.classList.add('active');
+        }
+        
+        // Reload chart data
+        if (chart === 'penjualan') {
+          loadPenjualanChartData();
+        }
+      } catch (error) {
+        debug('Error changing chart period: ' + error.message);
+      }
+    }
+    
+    /**
+     * Change chart type for pendapatan chart
+     */
+    function changeChartType(type) {
+      debug('Changing chart type to: ' + type);
+      
+      try {
+        if (charts.pendapatanPie) {
+          charts.pendapatanPie.config.type = type;
+          charts.pendapatanPie.update();
+          
+          // Update button states
+          const container = event.target.closest('.chart-actions');
+          if (container) {
+            container.querySelectorAll('.chart-btn').forEach(btn => {
+              btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+          }
+        }
+      } catch (error) {
+        debug('Error changing chart type: ' + error.message);
+      }
+    }
+    
+    // ===== RECENT ACTIVITIES =====
+    /**
+     * Load recent activities
+     */
+    function loadRecentActivities() {
+      debug('Loading recent activities...');
+      
+      try {
+        const activities = getRecentActivities();
+        displayActivities(activities);
+        debug('Recent activities loaded successfully');
+      } catch (error) {
+        debug('Error loading recent activities: ' + error.message);
+      }
+    }
+    
+    /**
+     * Get recent activities from various sources
+     */
+    function getRecentActivities() {
+      debug('Getting recent activities...');
+      
+      try {
+        const activities = [];
+        
+        // Get recent invoices
+        try {
+          const penjualan = JSON.parse(localStorage.getItem("dataPenjualan")) || [];
+          penjualan.slice(-10).reverse().forEach(invoice => {
+            activities.push({
+              type: 'payment',
+              title: `Invoice ${invoice.noInvoice || invoice.id || 'N/A'}`,
+              detail: `Total: Rp ${(invoice.total || 0).toLocaleString('id-ID')}`,
+              time: new Date(invoice.tanggal),
+              status: invoice.status || 'Belum Lunas'
+            });
+          });
+        } catch (e) {
+          debug('Error getting penjualan activities: ' + e.message);
+        }
+        
+        // Get recent customers
+        try {
+          const pelanggan = JSON.parse(localStorage.getItem("dataPelanggan")) || [];
+          pelanggan.slice(-5).reverse().forEach(customer => {
+            activities.push({
+              type: 'create',
+              title: `Pelanggan baru: ${customer.nama || 'N/A'}`,
+              detail: `Telepon: ${customer.telp || 'N/A'}`,
+              time: new Date(customer.tanggal)
+            });
+          });
+        } catch (e) {
+          debug('Error getting pelanggan activities: ' + e.message);
+        }
+        
+        // Sort by time and return recent ones
+        return activities
+          .sort((a, b) => b.time - a.time)
+          .slice(0, activitiesPerPage * activityPage);
+      } catch (error) {
+        debug('Error getting recent activities: ' + error.message);
+        return [];
+      }
+    }
+    
+    /**
+     * Display activities in the list
+     */
+    function displayActivities(activities) {
+      debug('Displaying activities: ' + activities.length);
+      
+      try {
+        const activityList = document.getElementById("activityList");
+        
+        if (!activityList) {
+          debug('Activity list element not found');
+          return;
+        }
+        
+        if (activities.length === 0) {
+          activityList.innerHTML = `
+            <li class="activity-item">
+              <div class="activity-content">
+                <div class="activity-title">Belum ada aktivitas terbaru</div>
+                <div class="activity-time">System</div>
+              </div>
+            </li>
+          `;
+          return;
+        }
+        
+        activityList.innerHTML = activities.map(activity => {
+          try {
+            const timeAgo = getTimeAgo(activity.time);
+            const iconClass = getActivityIcon(activity.type);
+            
+            return `
+              <li class="activity-item">
+                <div class="activity-icon ${iconClass.class}">
+                  <i class="${iconClass.icon}"></i>
+                </div>
+                <div class="activity-content">
+                  <div class="activity-title">${activity.title}</div>
+                  <div class="activity-time">${timeAgo}</div>
+                  ${activity.detail ? `<div class="activity-amount">${activity.detail}</div>` : ''}
+                </div>
+              </li>
+            `;
+          } catch (e) {
+            debug('Error displaying activity: ' + e.message);
+            return '';
+          }
+        }).join('');
+      } catch (error) {
+        debug('Error displaying activities: ' + error.message);
+      }
+    }
+    
+    /**
+     * Get icon information for activity type
+     */
+    function getActivityIcon(type) {
+      const icons = {
+        create: { class: 'create', icon: 'fas fa-plus' },
+        update: { class: 'update', icon: 'fas fa-edit' },
+        delete: { class: 'delete', icon: 'fas fa-trash' },
+        payment: { class: 'payment', icon: 'fas fa-file-invoice' }
+      };
+      
+      return icons[type] || { class: 'create', icon: 'fas fa-info' };
+    }
+    
+    /**
+     * Get time ago string from date
+     */
+    function getTimeAgo(date) {
+      try {
+        const now = new Date();
+        const diffInSeconds = Math.floor((now - date) / 1000);
+        
+        if (diffInSeconds < 60) {
+          return 'Baru saja';
+        }
+        
+        const diffInMinutes = Math.floor(diffInSeconds / 60);
+        if (diffInMinutes < 60) {
+          return `${diffInMinutes} menit yang lalu`;
+        }
+        
+        const diffInHours = Math.floor(diffInMinutes / 60);
+        if (diffInHours < 24) {
+          return `${diffInHours} jam yang lalu`;
+        }
+        
+        const diffInDays = Math.floor(diffInHours / 24);
+        if (diffInDays < 7) {
+          return `${diffInDays} hari yang lalu`;
+        }
+        
+        return date.toLocaleDateString('id-ID');
+      } catch (error) {
+        debug('Error calculating time ago: ' + error.message);
+        return 'Tanggal tidak valid';
+      }
+    }
+    
+    /**
+     * Load more activities
+     */
+    function loadMoreActivities() {
+      debug('Loading more activities...');
+      
+      try {
+        activityPage++;
+        const activities = getRecentActivities();
+        displayActivities(activities);
+      } catch (error) {
+        debug('Error loading more activities: ' + error.message);
+      }
+    }
+    
+    // ===== UTILITY FUNCTIONS =====
+    /**
+     * Refresh all dashboard data
+     */
+    function refreshData() {
+      debug('Refreshing data...');
+      
+      try {
+        showNotification("Memperbarui data...", "info");
+        
+        // Add loading spinner to refresh button
+        const refreshBtn = event.target.closest('button');
+        if (refreshBtn) {
+          const originalContent = refreshBtn.innerHTML;
+          refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memperbarui...';
+          refreshBtn.disabled = true;
+          
+          setTimeout(() => {
+            loadDashboardData();
+            loadRecentActivities();
+            
+            // Reset button
+            refreshBtn.innerHTML = originalContent;
+            refreshBtn.disabled = false;
+            
+            showNotification("Data berhasil diperbarui", "success");
+          }, 1000);
+        }
+      } catch (error) {
+        debug('Error refreshing data: ' + error.message);
+        showNotification("Gagal memperbarui data", "error");
+      }
+    }
+    
+    /**
+     * Update last refresh time
+     */
+    function updateLastRefreshTime() {
+      try {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('id-ID');
+        
+        // Update or create last refresh element
+        let refreshElement = document.getElementById('lastRefresh');
+        if (!refreshElement) {
+          refreshElement = document.createElement('div');
+          refreshElement.id = 'lastRefresh';
+          refreshElement.style.cssText = 'text-align: right; font-size: 12px; color: var(--text-light); margin-top: 10px;';
+          document.querySelector('.page-header').appendChild(refreshElement);
+        }
+        
+        refreshElement.textContent = `Terakhir diperbarui: ${timeString}`;
+      } catch (error) {
+        debug('Error updating last refresh time: ' + error.message);
+      }
+    }
+    
+    /**
+     * Show notification message
+     */
+    function showNotification(message, type = 'success') {
+      try {
+        const notification = document.getElementById("notification");
+        if (notification) {
+          notification.textContent = message;
+          notification.className = `notification ${type}`;
+          notification.classList.add("show");
+          
+          setTimeout(() => {
+            notification.classList.remove("show");
+          }, 3000);
+        }
+      } catch (error) {
+        debug('Error showing notification: ' + error.message);
+      }
+    }
+    
+    /**
+     * Logout function
+     */
+    function logout() {
+      debug('Logging out...');
+      
+      try {
+        if (confirm("Apakah Anda yakin ingin logout?")) {
+          localStorage.removeItem("currentUser");
+          showNotification("Anda telah berhasil logout");
+          
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 1000);
+        }
+      } catch (error) {
+        debug('Error during logout: ' + error.message);
+      }
+    }
+    
+    // ===== ERROR HANDLING =====
+    /**
+     * Global error handler
+     */
+    window.addEventListener('error', function(e) {
+      debug('Global error: ' + e.error.message);
+      showNotification("Terjadi kesalahan pada dashboard", "error");
+    });
+    
+    // ===== INITIALIZATION FUNCTION =====
+    /**
+     * Initialize dashboard components
+     */
+    function initializeDashboard() {
+      debug('Initializing dashboard components...');
+      
+      // This function can be expanded to initialize other components
+      // For now, it's a placeholder for future initialization needs
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laporan Penjualan - PACIFI PRO</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #1a365d;
+      --secondary-color: #8B0000;
+      --accent-color: #3182ce;
+      --light-color: #ebf8ff;
+      --border-color: #e2e8f0;
+      --text-color: #2d3748;
+      --text-light: #718096;
+      --success-color: #38a169;
+      --danger-color: #e53e3e;
+      --warning-color: #dd6b20;
+      --sidebar-width: 260px;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+    }
+    
+    .header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      height: 70px;
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+    }
+    
+    .brand {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+    }
+    
+    .user-name {
+      margin-right: 15px;
+      font-size: 14px;
+    }
+    
+    .logout-btn {
+      background: var(--danger-color);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+    
+    .logout-btn:hover {
+      background: #c5221f;
+    }
+    
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--primary-color);
+      color: white;
+      position: fixed;
+      height: calc(100vh - 70px);
+      left: 0;
+      top: 70px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+      overflow-y: auto;
+      z-index: 90;
+      transition: transform 0.3s;
+    }
+    
+    .sidebar-menu {
+      list-style: none;
+      padding: 20px 0;
+    }
+    
+    .sidebar-menu li {
+      margin-bottom: 5px;
+    }
+    
+    .sidebar-menu a {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      transition: all 0.3s;
+      border-left: 3px solid transparent;
+    }
+    
+    .sidebar-menu a:hover, .sidebar-menu a.active {
+      background-color: rgba(255,255,255,0.1);
+      color: white;
+      border-left: 3px solid var(--accent-color);
+    }
+    
+    .sidebar-menu i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+    
+    .main-content {
+      margin-left: var(--sidebar-width);
+      padding: 100px 20px 20px;
+      min-height: 100vh;
+      width: calc(100% - var(--sidebar-width));
+    }
+    
+    .page-header {
+      margin-bottom: 30px;
+    }
+    
+    .page-title {
+      font-size: 28px;
+      color: var(--primary-color);
+      margin-bottom: 5px;
+    }
+    
+    .page-subtitle {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .controls {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #0d0e1f;
+    }
+    
+    .btn-success {
+      background-color: var(--success-color);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background-color: #2d8e47;
+    }
+    
+    .btn-info {
+      background-color: var(--accent-color);
+      color: white;
+    }
+    
+    .btn-info:hover {
+      background-color: #3367d6;
+    }
+    
+    .btn-danger {
+      background-color: var(--danger-color);
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background-color: #c5221f;
+    }
+    
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .data-table th {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 12px 15px;
+      text-align: left;
+      font-weight: 600;
+    }
+    
+    .data-table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .data-table tbody tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+    
+    .data-table tbody tr:hover {
+      background-color: #f0f0f0;
+    }
+    
+    .data-table tfoot td {
+      font-weight: bold;
+      background-color: #f0f0f0;
+    }
+    
+    .status-select {
+      padding: 5px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+    
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      background-color: var(--success-color);
+      color: white;
+      border-radius: 5px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 1000;
+      transform: translateY(-100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    
+    .notification.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    .notification.error {
+      background-color: var(--danger-color);
+    }
+    
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .summary-card {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+    
+    .summary-card .value {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary-color);
+      margin: 5px 0;
+    }
+    
+    .summary-card .label {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .summary-card .icon {
+      font-size: 24px;
+      color: var(--accent-color);
+      margin-bottom: 5px;
+    }
+    
+    .pagination-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .btn.active {
+      background-color: var(--secondary-color) !important;
+    }
+    
+    .filter-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-input {
+      padding: 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      flex-grow: 1;
+    }
+    
+    .filter-select {
+      padding: 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+    }
+    
+    .info-box {
+      background-color: #e3f2fd;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 4px solid var(--accent-color);
+    }
+    
+    .info-box i {
+      color: var(--accent-color);
+      margin-right: 10px;
+    }
+    
+    .info-box strong {
+      color: var(--primary-color);
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      
+      .main-content {
+        margin-left: 0;
+        width: 100%;
+      }
+      
+      .menu-toggle {
+        display: block;
+      }
+      
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .summary-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      
+      .summary-card {
+        padding: 12px;
+      }
+      
+      .summary-card .value {
+        font-size: 18px;
+      }
+      
+      .summary-card .label {
+        font-size: 12px;
+      }
+      
+      .data-table {
+        font-size: 12px;
+      }
+      
+      .data-table th, .data-table td {
+        padding: 8px 5px;
+      }
+      
+      .btn {
+        padding: 6px 12px;
+        font-size: 12px;
+        justify-content: center;
+      }
+      
+      .page-title {
+        font-size: 22px;
+      }
+      
+      .card {
+        padding: 15px;
+      }
+      
+      .pagination-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .pagination-container button {
+        margin: 2px;
+        padding: 5px 10px;
+        font-size: 12px;
+      }
+    }
+    
+    @media print {
+      .header, .sidebar, .controls, .btn, .pagination-container, .info-box {
+        display: none !important;
+      }
+      
+      .main-content {
+        margin-left: 0;
+        padding: 0;
+        width: 100%;
+      }
+      
+      .card {
+        box-shadow: none;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo-container">
+      <button class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="brand">PACIFI PRO</div>
+    </div>
+    <div class="user-info">
+      <div class="user-name" id="userWelcome">Loading...</div>
+      <button class="logout-btn" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </div>
+  
+  <div class="sidebar" id="sidebar">
+    <ul class="sidebar-menu">
+      <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+      <li><a href="pelanggan.html"><i class="fas fa-users"></i> Data Pelanggan</a></li>
+      <li><a href="jenis-invoice.html"><i class="fas fa-file-alt"></i> Jenis Invoice</a></li>
+      <li><a href="invoice.html"><i class="fas fa-receipt"></i> Invoice</a></li>
+      <li><a href="laporan-penjualan.html" class="active"><i class="fas fa-chart-line"></i> Laporan Penjualan</a></li>
+      <li><a href="program_keuangan_akun.html"><i class="fas fa-coins"></i> Input Akun</a></li>
+      <li><a href="program_keuangan_jurnal.html"><i class="fas fa-book"></i> Jurnal</a></li>
+      <li><a href="program_keuangan_laporan.html"><i class="fas fa-chart-pie"></i> Laporan Keuangan</a></li>
+      <li><a href="neraca.html"><i class="fas fa-balance-scale"></i> Neraca</a></li>
+      <li><a href="laba_rugi.html"><i class="fas fa-chart-line"></i> Laba Rugi</a></li>
+      <li><a href="arus_kas.html"><i class="fas fa-money-bill-wave"></i> Arus Kas</a></li>
+      <li><a href="pengguna.html" id="linkPengguna" style="display: none;"><i class="fas fa-user-cog"></i> Manajemen Pengguna</a></li>
+    </ul>
+  </div>
+  
+  <div class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">Laporan Penjualan</h1>
+      <p class="page-subtitle">Ringkasan data penjualan perusahaan</p>
+    </div>
+    
+    <div class="info-box">
+      <i class="fas fa-info-circle"></i>
+      <strong>Informasi Penting:</strong> Setiap penjualan dan pelunasan akan otomatis dicatat di jurnal. 
+      Transaksi penjualan dicatat pada tanggal penjualan, sedangkan transaksi pelunasan dicatat pada tanggal pelunasan.
+    </div>
+    
+    <div class="summary-cards">
+      <div class="summary-card">
+        <div class="icon"><i class="fas fa-shopping-cart"></i></div>
+        <div class="value" id="totalPenjualan">Rp 0</div>
+        <div class="label">Total Penjualan</div>
+      </div>
+      <div class="summary-card">
+        <div class="icon"><i class="fas fa-file-invoice"></i></div>
+        <div class="value" id="totalInvoice">0</div>
+        <div class="label">Total Invoice</div>
+      </div>
+      <div class="summary-card">
+        <div class="icon"><i class="fas fa-check-circle"></i></div>
+        <div class="value" id="totalLunas">Rp 0</div>
+        <div class="label">Sudah Lunas</div>
+      </div>
+      <div class="summary-card">
+        <div class="icon"><i class="fas fa-clock"></i></div>
+        <div class="value" id="totalBelumLunas">Rp 0</div>
+        <div class="label">Belum Lunas</div>
+      </div>
+    </div>
+    
+    <div class="controls">
+      <div>
+        <button class="btn btn-primary" onclick="refreshData()">
+          <i class="fas fa-sync-alt"></i> Refresh Data
+        </button>
+      </div>
+      <div>
+        <button class="btn btn-success" onclick="exportToExcel()">
+          <i class="fas fa-file-excel"></i> Export Excel
+        </button>
+        <button class="btn btn-info" onclick="window.print()">
+          <i class="fas fa-print"></i> Cetak
+        </button>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="filter-container">
+        <input type="text" id="searchInput" class="filter-input" placeholder="Cari berdasarkan customer atau no invoice...">
+        <select id="filterStatus" class="filter-select">
+          <option value="">Semua Status</option>
+          <option value="Lunas">Lunas</option>
+          <option value="Belum Lunas">Belum Lunas</option>
+        </select>
+        <button class="btn btn-primary" onclick="applyFilters()">
+          <i class="fas fa-filter"></i> Filter
+        </button>
+      </div>
+      
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Tanggal</th>
+              <th>Customer</th>
+              <th>No Invoice</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Tanggal Pelunasan</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="isiLaporan">
+            <!-- Data akan diisi oleh JavaScript -->
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4" style="text-align: right;">Total Penjualan:</td>
+              <td id="totalSemua">Rp 0</td>
+              <td colspan="3"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      
+      <div class="pagination-container" id="paginationContainer">
+        <!-- Pagination akan diisi oleh JavaScript -->
+      </div>
+    </div>
+  </div>
+  
+  <div id="notification" class="notification"></div>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script>
+    // Global variables
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    let filteredData = [];
+    let allData = [];
+    
+    // Audit Trail Integration
+    function logActivity(action, module, detail) {
+      if (window.auditTrail) {
+        window.auditTrail.log({
+          action: action,
+          module: module,
+          detail: detail,
+          timestamp: new Date().toISOString()
+        });
+      }
+    }
+    
+    // Override existing functions to add audit logging
+    if (!window.originalShowNotification) {
+      window.originalShowNotification = window.showNotification;
+    }
+    
+    window.showNotification = function(message, type = 'success') {
+      if (window.originalShowNotification) {
+        window.originalShowNotification(message, type);
+      }
+      
+      // Log notification as audit activity
+      const user = JSON.parse(localStorage.getItem('currentUser'));
+      if (user) {
+        logActivity(type === 'error' ? 'error' : 'info', 'System', `Notification: ${message}`);
+      }
+    };
+    
+    // Fungsi untuk toggle sidebar
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("active");
+    }
+    
+    // Fungsi logout
+    function logout() {
+      const user = JSON.parse(localStorage.getItem("currentUser"));
+      if (user) {
+        logActivity('logout', 'Authentication', 'User logout');
+      }
+      
+      localStorage.removeItem("currentUser");
+      showNotification("Anda telah berhasil logout");
+      window.location.href = "index.html";
+    }
+    
+    // Fungsi untuk menampilkan notifikasi
+    function showNotification(message, type = 'success') {
+      const notification = document.getElementById("notification");
+      notification.textContent = message;
+      notification.className = `notification ${type}`;
+      notification.classList.add("show");
+      
+      setTimeout(() => {
+        notification.classList.remove("show");
+      }, 3000);
+    }
+    
+    // Fungsi untuk format Rupiah
+    function formatRupiah(angka) {
+      return "Rp " + parseFloat(angka).toLocaleString("id-ID");
+    }
+    
+    // Fungsi untuk menyimpan data
+    function simpanData(data) {
+      localStorage.setItem("dataPenjualan", JSON.stringify(data));
+    }
+    
+    // Fungsi untuk menyimpan data ke jurnal
+    function simpanKeJurnal(penjualan) {
+      try {
+        // Ambil data jurnal yang ada
+        const jurnalData = JSON.parse(localStorage.getItem("dataJurnal")) || [];
+        
+        // Tambahkan entri untuk pendapatan penjualan
+        jurnalData.push({
+          tanggal: penjualan.tanggal,
+          akun: "Pendapatan Jasa",
+          keterangan: `Penjualan - ${penjualan.customer}`,
+          debit: 0,
+          kredit: penjualan.total,
+          fromPenjualan: true,
+          noInvoice: penjualan.noInvoice,
+          jenisTransaksi: "penjualan"
+        });
+        
+        // Tambahkan entri untuk kas/piutang
+        jurnalData.push({
+          tanggal: penjualan.tanggal,
+          akun: penjualan.metodePembayaran === "Tunai" ? "Kas" : "Piutang Usaha",
+          keterangan: `Penjualan - ${penjualan.customer}`,
+          debit: penjualan.total,
+          kredit: 0,
+          fromPenjualan: true,
+          noInvoice: penjualan.noInvoice,
+          jenisTransaksi: "penjualan"
+        });
+        
+        // Simpan kembali data jurnal
+        localStorage.setItem("dataJurnal", JSON.stringify(jurnalData));
+        
+        // Simpan juga ke laporanKeuangan untuk integrasi dengan neraca
+        const laporanKeuangan = JSON.parse(localStorage.getItem("laporanKeuangan")) || [];
+        
+        laporanKeuangan.push({
+          tanggal: penjualan.tanggal,
+          akun: "Pendapatan Jasa",
+          nilai: penjualan.total,
+          keterangan: `Penjualan - ${penjualan.customer}`,
+          tipe: "kredit",
+          noInvoice: penjualan.noInvoice,
+          jenisTransaksi: "penjualan"
+        });
+        
+        laporanKeuangan.push({
+          tanggal: penjualan.tanggal,
+          akun: penjualan.metodePembayaran === "Tunai" ? "Kas" : "Piutang Usaha",
+          nilai: penjualan.total,
+          keterangan: `Penjualan - ${penjualan.customer}`,
+          tipe: "debit",
+          noInvoice: penjualan.noInvoice,
+          jenisTransaksi: "penjualan"
+        });
+        
+        localStorage.setItem("laporanKeuangan", JSON.stringify(laporanKeuangan));
+        
+        // Log activity
+        logActivity('create', 'Journal Entry', `Created journal entries for invoice: ${penjualan.noInvoice}`);
+      } catch (error) {
+        console.error("Error saving to journal:", error);
+        showNotification("Terjadi kesalahan saat menyimpan ke jurnal", "error");
+      }
+    }
+    
+    // Fungsi untuk render tabel data
+    function renderTable() {
+      const tbody = document.getElementById("isiLaporan");
+      tbody.innerHTML = "";
+      
+      if (filteredData.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" style="text-align: center; padding: 20px;">
+              Tidak ada data penjualan
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const pageData = filteredData.slice(startIndex, endIndex);
+      
+      pageData.forEach((item, index) => {
+        const actualIndex = startIndex + index;
+        const status = item.status || "Belum Lunas";
+        const pelunasan = item.tanggalPelunasan || "";
+        
+        tbody.innerHTML += `
+          <tr>
+            <td>${actualIndex + 1}</td>
+            <td>${item.tanggal}</td>
+            <td>${item.customer}</td>
+            <td><a href="detail-invoice.html?no=${encodeURIComponent(item.noInvoice)}" target="_blank">${item.noInvoice}</a></td>
+            <td>${formatRupiah(item.total)}</td>
+            <td>
+              <select class="status-select" onchange="ubahStatus(${actualIndex}, this.value)">
+                <option value="Belum Lunas" ${status === "Belum Lunas" ? "selected" : ""}>Belum Lunas</option>
+                <option value="Lunas" ${status === "Lunas" ? "selected" : ""}>Lunas</option>
+              </select>
+            </td>
+            <td>
+              <input type="date" value="${pelunasan}" id="tglPelunasan${actualIndex}" ${status === "Lunas" ? "" : "disabled"} onchange="ubahTanggalPelunasan(${actualIndex}, this.value)" />
+            </td>
+            <td>
+              <button class="btn btn-danger btn-sm" onclick="confirmHapusData(${actualIndex})">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+    
+    // Fungsi untuk setup pagination controls
+    function setupPaginationControls() {
+      const container = document.getElementById("paginationContainer");
+      container.innerHTML = "";
+      
+      if (filteredData.length <= itemsPerPage) {
+        return; // Tidak perlu pagination jika data sedikit
+      }
+      
+      const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+      
+      // Previous button
+      const prevBtn = document.createElement("button");
+      prevBtn.className = "btn btn-primary";
+      prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+      prevBtn.disabled = currentPage === 1;
+      prevBtn.onclick = () => changePage(currentPage - 1);
+      container.appendChild(prevBtn);
+      
+      // Page numbers
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+          const pageBtn = document.createElement("button");
+          pageBtn.className = `btn btn-primary ${i === currentPage ? 'active' : ''}`;
+          pageBtn.textContent = i;
+          pageBtn.onclick = () => changePage(i);
+          container.appendChild(pageBtn);
+        } else if (i === currentPage - 3 || i === currentPage + 3) {
+          const ellipsis = document.createElement("span");
+          ellipsis.textContent = "...";
+          container.appendChild(ellipsis);
+        }
+      }
+      
+      // Next button
+      const nextBtn = document.createElement("button");
+      nextBtn.className = "btn btn-primary";
+      nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+      nextBtn.disabled = currentPage === totalPages;
+      nextBtn.onclick = () => changePage(currentPage + 1);
+      container.appendChild(nextBtn);
+      
+      // Items per page selector
+      const selectContainer = document.createElement("div");
+      selectContainer.style.marginLeft = "10px";
+      
+      const label = document.createElement("span");
+      label.textContent = "Items per page: ";
+      selectContainer.appendChild(label);
+      
+      const select = document.createElement("select");
+      select.className = "filter-select";
+      select.innerHTML = `
+        <option value="10" ${itemsPerPage === 10 ? 'selected' : ''}>10</option>
+        <option value="25" ${itemsPerPage === 25 ? 'selected' : ''}>25</option>
+        <option value="50" ${itemsPerPage === 50 ? 'selected' : ''}>50</option>
+        <option value="100" ${itemsPerPage === 100 ? 'selected' : ''}>100</option>
+      `;
+      select.onchange = function() {
+        changeItemsPerPage(this.value);
+      };
+      selectContainer.appendChild(select);
+      
+      container.appendChild(selectContainer);
+    }
+    
+    // Fungsi untuk ganti halaman
+    function changePage(page) {
+      const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+      if (page >= 1 && page <= totalPages) {
+        currentPage = page;
+        renderTable();
+        setupPaginationControls();
+      }
+    }
+    
+    // Fungsi untuk ganti jumlah item per halaman
+    function changeItemsPerPage(value) {
+      itemsPerPage = parseInt(value);
+      currentPage = 1;
+      renderTable();
+      setupPaginationControls();
+    }
+    
+    // Fungsi untuk menerapkan filter
+    function applyFilters() {
+      try {
+        const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+        const filterStatus = document.getElementById("filterStatus").value;
+        
+        filteredData = allData.filter(item => {
+          const matchesSearch = searchTerm === "" || 
+            item.customer.toLowerCase().includes(searchTerm) || 
+            item.noInvoice.toLowerCase().includes(searchTerm);
+          
+          const matchesStatus = filterStatus === "" || item.status === filterStatus;
+          
+          return matchesSearch && matchesStatus;
+        });
+        
+        currentPage = 1; // Reset to first page
+        renderTable();
+        setupPaginationControls();
+        updateSummaryCards();
+        
+        // Show result count
+        const resultCount = filteredData.length;
+        if (resultCount > 0) {
+          showNotification(`Ditemukan ${resultCount} data penjualan`);
+        } else {
+          showNotification("Tidak ada data yang sesuai dengan filter", "error");
+        }
+        
+        // Log activity
+        logActivity('filter', 'Sales Report', `Applied filters: search="${searchTerm}", status="${filterStatus}"`);
+      } catch (error) {
+        console.error("Error applying filters:", error);
+        showNotification("Terjadi kesalahan saat menerapkan filter", "error");
+      }
+    }
+    
+    // Fungsi untuk update summary cards
+    function updateSummaryCards() {
+      let totalPenjualan = 0;
+      let totalLunas = 0;
+      let totalBelumLunas = 0;
+      
+      filteredData.forEach(item => {
+        const total = parseFloat(item.total);
+        totalPenjualan += total;
+        
+        if (item.status === "Lunas") {
+          totalLunas += total;
+        } else {
+          totalBelumLunas += total;
+        }
+      });
+      
+      document.getElementById("totalPenjualan").textContent = formatRupiah(totalPenjualan);
+      document.getElementById("totalInvoice").textContent = filteredData.length.toString();
+      document.getElementById("totalLunas").textContent = formatRupiah(totalLunas);
+      document.getElementById("totalBelumLunas").textContent = formatRupiah(totalBelumLunas);
+      document.getElementById("totalSemua").textContent = formatRupiah(totalPenjualan);
+    }
+    
+    // Fungsi untuk menampilkan laporan penjualan
+    function tampilkanLaporanPenjualan() {
+      try {
+        allData = JSON.parse(localStorage.getItem("dataPenjualan")) || [];
+        filteredData = [...allData]; // Copy all data to filtered data
+        currentPage = 1;
+        
+        renderTable();
+        setupPaginationControls();
+        updateSummaryCards();
+        
+        // Log activity
+        logActivity('view', 'Sales Report', 'User accessed sales report page');
+      } catch (error) {
+        console.error("Error displaying sales report:", error);
+        showNotification("Terjadi kesalahan saat menampilkan data", "error");
+      }
+    }
+    
+    // Fungsi untuk mengubah status
+    function ubahStatus(index, status) {
+      try {
+        const data = [...allData];
+        const oldStatus = data[index].status;
+        data[index].status = status;
+        
+        if (status === "Lunas") {
+          document.getElementById("tglPelunasan" + index).disabled = false;
+          // Jika tanggal pelunasan belum diisi, isi dengan tanggal hari ini
+          if (!data[index].tanggalPelunasan) {
+            const today = new Date().toISOString().split('T')[0];
+            data[index].tanggalPelunasan = today;
+            document.getElementById("tglPelunasan" + index).value = today;
+          }
+          
+          // Jika status berubah dari Belum Lunas menjadi Lunas, tambahkan entri jurnal untuk penerimaan kas
+          if (oldStatus === "Belum Lunas") {
+            const jurnalData = JSON.parse(localStorage.getItem("dataJurnal")) || [];
+            
+            // Tambahkan entri untuk pengurangan piutang
+            jurnalData.push({
+              tanggal: data[index].tanggalPelunasan || new Date().toISOString().split('T')[0],
+              akun: "Piutang Usaha",
+              keterangan: `Pelunasan Invoice ${data[index].noInvoice} - ${data[index].customer}`,
+              debit: 0,
+              kredit: data[index].total,
+              fromPenjualan: true,
+              noInvoice: data[index].noInvoice,
+              jenisTransaksi: "pelunasan"
+            });
+            
+            // Tambahkan entri untuk penambahan kas
+            jurnalData.push({
+              tanggal: data[index].tanggalPelunasan || new Date().toISOString().split('T')[0],
+              akun: "Kas",
+              keterangan: `Pelunasan Invoice ${data[index].noInvoice} - ${data[index].customer}`,
+              debit: data[index].total,
+              kredit: 0,
+              fromPenjualan: true,
+              noInvoice: data[index].noInvoice,
+              jenisTransaksi: "pelunasan"
+            });
+            
+            localStorage.setItem("dataJurnal", JSON.stringify(jurnalData));
+            
+            // Simpan juga ke laporanKeuangan
+            const laporanKeuangan = JSON.parse(localStorage.getItem("laporanKeuangan")) || [];
+            
+            laporanKeuangan.push({
+              tanggal: data[index].tanggalPelunasan || new Date().toISOString().split('T')[0],
+              akun: "Piutang Usaha",
+              nilai: data[index].total,
+              keterangan: `Pelunasan Invoice ${data[index].noInvoice} - ${data[index].customer}`,
+              tipe: "kredit",
+              noInvoice: data[index].noInvoice,
+              jenisTransaksi: "pelunasan"
+            });
+            
+            laporanKeuangan.push({
+              tanggal: data[index].tanggalPelunasan || new Date().toISOString().split('T')[0],
+              akun: "Kas",
+              nilai: data[index].total,
+              keterangan: `Pelunasan Invoice ${data[index].noInvoice} - ${data[index].customer}`,
+              tipe: "debit",
+              noInvoice: data[index].noInvoice,
+              jenisTransaksi: "pelunasan"
+            });
+            
+            localStorage.setItem("laporanKeuangan", JSON.stringify(laporanKeuangan));
+            
+            showNotification("Status pembayaran diperbarui dan dicatat di jurnal!");
+          }
+        } else {
+          data[index].tanggalPelunasan = "";
+          document.getElementById("tglPelunasan" + index).value = "";
+          document.getElementById("tglPelunasan" + index).disabled = true;
+        }
+        
+        simpanData(data);
+        allData = data; // Update allData reference
+        
+        // Apply current filters again
+        applyFilters();
+        
+        // Log activity
+        logActivity('update', 'Sales Report', `Changed status of invoice ${data[index].noInvoice} from ${oldStatus} to ${status}`);
+      } catch (error) {
+        console.error("Error changing status:", error);
+        showNotification("Terjadi kesalahan saat mengubah status", "error");
+      }
+    }
+    
+    // Fungsi untuk mengubah tanggal pelunasan
+    function ubahTanggalPelunasan(index, value) {
+      try {
+        const data = [...allData];
+        data[index].tanggalPelunasan = value;
+        simpanData(data);
+        allData = data; // Update allData reference
+        
+        // Update jurnal entries untuk pelunasan dengan tanggal baru
+        updateJurnalPelunasanTanggal(data[index]);
+        
+        // Log activity
+        logActivity('update', 'Sales Report', `Updated payment date for invoice ${data[index].noInvoice}`);
+      } catch (error) {
+        console.error("Error changing payment date:", error);
+        showNotification("Terjadi kesalahan saat mengubah tanggal pelunasan", "error");
+      }
+    }
+    
+    // Fungsi untuk update jurnal pelunasan dengan tanggal baru
+    function updateJurnalPelunasanTanggal(penjualan) {
+      try {
+        const jurnalData = JSON.parse(localStorage.getItem("dataJurnal")) || [];
+        const laporanKeuangan = JSON.parse(localStorage.getItem("laporanKeuangan")) || [];
+        
+        // Update entri jurnal untuk pelunasan
+        jurnalData.forEach(item => {
+          if (item.noInvoice === penjualan.noInvoice && item.jenisTransaksi === "pelunasan") {
+            item.tanggal = penjualan.tanggalPelunasan;
+          }
+        });
+        
+        // Update entri laporan keuangan untuk pelunasan
+        laporanKeuangan.forEach(item => {
+          if (item.noInvoice === penjualan.noInvoice && item.jenisTransaksi === "pelunasan") {
+            item.tanggal = penjualan.tanggalPelunasan;
+          }
+        });
+        
+        localStorage.setItem("dataJurnal", JSON.stringify(jurnalData));
+        localStorage.setItem("laporanKeuangan", JSON.stringify(laporanKeuangan));
+        
+        showNotification("Tanggal pelunasan dan jurnal telah diperbarui");
+      } catch (error) {
+        console.error("Error updating journal payment date:", error);
+        showNotification("Terjadi kesalahan saat memperbarui jurnal", "error");
+      }
+    }
+    
+    // Fungsi untuk konfirmasi hapus data
+    function confirmHapusData(index) {
+      const item = allData[index];
+      if (confirm(`Yakin ingin menghapus data penjualan untuk ${item.customer} (Invoice: ${item.noInvoice})?`)) {
+        hapusData(index);
+      }
+    }
+    
+    // Fungsi untuk menghapus data
+    function hapusData(index) {
+      try {
+        const data = [...allData];
+        const deletedItem = data[index];
+        data.splice(index, 1);
+        simpanData(data);
+        allData = data; // Update allData reference
+        
+        // Hapus juga dari jurnal dan laporan keuangan
+        hapusDariJurnal(deletedItem);
+        
+        // Apply current filters again
+        applyFilters();
+        
+        showNotification("Data penjualan berhasil dihapus");
+        
+        // Log activity
+        logActivity('delete', 'Sales Report', `Deleted sales data for invoice ${deletedItem.noInvoice}`);
+      } catch (error) {
+        console.error("Error deleting data:", error);
+        showNotification("Terjadi kesalahan saat menghapus data", "error");
+      }
+    }
+    
+    // Fungsi untuk menghapus data dari jurnal
+    function hapusDariJurnal(penjualan) {
+      try {
+        // Hapus dari dataJurnal
+        let jurnalData = JSON.parse(localStorage.getItem("dataJurnal")) || [];
+        jurnalData = jurnalData.filter(item => 
+          !(item.noInvoice === penjualan.noInvoice && item.fromPenjualan)
+        );
+        localStorage.setItem("dataJurnal", JSON.stringify(jurnalData));
+        
+        // Hapus dari laporanKeuangan
+        let laporanKeuangan = JSON.parse(localStorage.getItem("laporanKeuangan")) || [];
+        laporanKeuangan = laporanKeuangan.filter(item => 
+          !(item.noInvoice === penjualan.noInvoice)
+        );
+        localStorage.setItem("laporanKeuangan", JSON.stringify(laporanKeuangan));
+        
+        // Log activity
+        logActivity('delete', 'Journal Entry', `Deleted journal entries for invoice ${penjualan.noInvoice}`);
+      } catch (error) {
+        console.error("Error deleting from journal:", error);
+        showNotification("Terjadi kesalahan saat menghapus dari jurnal", "error");
+      }
+    }
+    
+    // Fungsi untuk refresh data
+    function refreshData() {
+      try {
+        tampilkanLaporanPenjualan();
+        showNotification("Data berhasil diperbarui");
+        
+        // Log activity
+        logActivity('refresh', 'Sales Report', 'Refreshed sales data');
+      } catch (error) {
+        console.error("Error refreshing data:", error);
+        showNotification("Terjadi kesalahan saat memperbarui data", "error");
+      }
+    }
+    
+    // Fungsi untuk export ke Excel
+    function exportToExcel() {
+      try {
+        // Create a temporary table for export with all filtered data
+        const tempTable = document.createElement('table');
+        
+        // Add header
+        const thead = document.createElement('thead');
+        thead.innerHTML = `
+          <tr>
+            <th>No</th>
+            <th>Tanggal</th>
+            <th>Customer</th>
+            <th>No Invoice</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Tanggal Pelunasan</th>
+          </tr>
+        `;
+        tempTable.appendChild(thead);
+        
+        // Add body
+        const tbody = document.createElement('tbody');
+        filteredData.forEach((item, index) => {
+          const status = item.status || "Belum Lunas";
+          const pelunasan = item.tanggalPelunasan || "";
+          
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${item.tanggal}</td>
+            <td>${item.customer}</td>
+            <td>${item.noInvoice}</td>
+            <td>${item.total}</td>
+            <td>${status}</td>
+            <td>${pelunasan}</td>
+          `;
+          tbody.appendChild(row);
+        });
+        tempTable.appendChild(tbody);
+        
+        // Add footer with total
+        const tfoot = document.createElement('tfoot');
+        const total = filteredData.reduce((sum, item) => sum + parseFloat(item.total), 0);
+        tfoot.innerHTML = `
+          <tr>
+            <td colspan="4" style="text-align: right; font-weight: bold;">Total Penjualan:</td>
+            <td style="font-weight: bold;">${total}</td>
+            <td colspan="2"></td>
+          </tr>
+        `;
+        tempTable.appendChild(tfoot);
+        
+        // Export to Excel
+        const wb = XLSX.utils.table_to_book(tempTable, { sheet: "Laporan Penjualan" });
+        XLSX.writeFile(wb, "laporan_penjualan.xlsx");
+        
+        showNotification("Laporan berhasil diekspor ke Excel");
+        
+        // Log activity
+        logActivity('export', 'Sales Report', 'Exported sales report to Excel');
+      } catch (error) {
+        console.error("Error exporting to Excel:", error);
+        showNotification("Terjadi kesalahan saat mengekspor ke Excel", "error");
+      }
+    }
+    
+    // Event listener untuk search input
+    document.getElementById("searchInput").addEventListener("keyup", function(event) {
+      if (event.key === "Enter") {
+        applyFilters();
+      }
+    });
+    
+    // Inisialisasi saat halaman dimuat
+    window.onload = function() {
+      try {
+        // CEK LOGIN DAN ROLE
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        if (!currentUser || !["admin", "staff"].includes(currentUser.role)) {
+          showNotification("Akses ditolak. Halaman ini hanya untuk Admin & Staff.", "error");
+          window.location.href = "dashboard.html";
+          return;
+        }
+        
+        // Update user info dengan format yang konsisten dengan dashboard
+        document.getElementById("userWelcome").textContent = `Login sebagai: ${currentUser.username} (${currentUser.role})`;
+        
+        if (currentUser.role === "admin") {
+          document.getElementById("linkPengguna").style.display = "block";
+        }
+        
+        // Tampilkan data penjualan
+        tampilkanLaporanPenjualan();
+        
+        // Cek apakah ada data penjualan yang belum tersimpan di jurnal
+        const dataPenjualan = JSON.parse(localStorage.getItem("dataPenjualan")) || [];
+        const jurnalData = JSON.parse(localStorage.getItem("dataJurnal")) || [];
+        
+        // Cek setiap penjualan apakah sudah ada di jurnal
+        dataPenjualan.forEach(penjualan => {
+          const existsInJurnal = jurnalData.some(item => 
+            item.noInvoice === penjualan.noInvoice && item.fromPenjualan && item.jenisTransaksi === "penjualan"
+          );
+          
+          // Jika belum ada di jurnal, tambahkan
+          if (!existsInJurnal) {
+            simpanKeJurnal(penjualan);
+          }
+        });
+        
+        // Refresh tampilan setelah sinkronisasi
+        tampilkanLaporanPenjualan();
+        
+        // Log activity
+        logActivity('view', 'Sales Report', 'User accessed sales report page');
+      } catch (error) {
+        console.error("Error initializing page:", error);
+        showNotification("Terjadi kesalahan saat memuat halaman", "error");
+      }
+    };
+  </script>
+</body>
+</html>

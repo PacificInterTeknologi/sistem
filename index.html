@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Akuntansi - PACIFIC PRO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===== ROOT VARIABLES ===== */
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #8B0000;
+            --accent-color: #3182ce;
+            --light-color: #ebf8ff;
+            --border-color: #e2e8f0;
+            --text-color: #2d3748;
+            --text-light: #718096;
+            --success-color: #38a169;
+            --danger-color: #e53e3e;
+            --warning-color: #dd6b20;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* ===== RESET & BASE STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a365d 0%, #8B0000 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* ===== BACKGROUND PATTERN ===== */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 30%);
+            z-index: 0;
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        /* ===== MAIN CONTAINER ===== */
+        .container {
+            max-width: 600px;
+            padding: 40px;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* ===== LOGO SECTION ===== */
+        .logo-container {
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .logo {
+            max-width: 200px;
+            height: auto;
+            border-radius: 50%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            background-color: white;
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+        
+        .logo:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); }
+            50% { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); }
+            100% { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); }
+        }
+        
+        .logo-fallback {
+            display: none;
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* ===== CONTENT SECTION ===== */
+        h1 {
+            font-size: clamp(2rem, 5vw, 2.5rem);
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            margin-bottom: 40px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        /* ===== BUTTON STYLES ===== */
+        .btn-container {
+            margin-top: 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn i {
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .btn:hover i {
+            transform: translateX(5px);
+        }
+        
+        /* ===== NOTIFICATION STYLES ===== */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background-color: var(--accent-color);
+            color: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow-xl);
+            z-index: 1000;
+            transform: translateX(400px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .notification.success {
+            background-color: var(--success-color);
+        }
+        
+        .notification.error {
+            background-color: var(--danger-color);
+        }
+        
+        /* ===== FOOTER ===== */
+        .developer-info {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 15px;
+            z-index: 1;
+            font-weight: 500;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 2s ease-out 0.5s both;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .developer-info span {
+            color: #90cdf4;
+            font-weight: 600;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+        
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .logo {
+                max-width: 150px;
+            }
+            
+            .logo-fallback {
+                font-size: 36px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .btn {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+            
+            .developer-info {
+                font-size: 13px;
+                bottom: 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .logo {
+                max-width: 120px;
+            }
+            
+            .logo-fallback {
+                font-size: 30px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .btn {
+                padding: 10px 25px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        
+        /* ===== FOCUS STYLES ===== */
+        a:focus,
+        button:focus {
+            outline: 3px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+        
+        /* ===== REDUCED MOTION ===== */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="sr-only">Skip to main content</a>
+    
+    <!-- Main container -->
+    <div class="container" id="main-content">
+        <!-- Logo section -->
+        <div class="logo-container">
+            <img src="tegline.png" alt="PACIFI PRO Logo" class="logo" 
+                 onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='block';">
+            <div id="logoFallback" class="logo-fallback">PP</div>
+        </div>
+        
+        <!-- Content section -->
+        <main>
+            <h1>SISTEM AKUNTANSI</h1>
+            <p class="subtitle">Developed by Pacific Inter Teknologi</p>
+            
+            <!-- Button container -->
+            <div class="btn-container">
+                <a href="login.html" class="btn" aria-label="Masuk ke sistem PACIFI PRO">
+                    <i class="fas fa-sign-in-alt"></i> Masuk ke Sistem
+                </a>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="developer-info">
+        Developed by <span>Pacific Inter Teknologi</span> © 2023
+    </footer>
+    
+    <!-- Notification element -->
+    <div id="notification" class="notification" role="alert" aria-live="polite"></div>
+    
+    <!-- JavaScript -->
+    <script>
+        // ===== AUDIT TRAIL INTEGRATION =====
+        // This function logs user activities for tracking purposes
+        function logActivity(action, module, detail) {
+            if (window.auditTrail) {
+                window.auditTrail.log({
+                    action: action,
+                    module: module,
+                    detail: detail
+                });
+            }
+        }
+        
+        // ===== NOTIFICATION SYSTEM =====
+        /**
+         * Shows a notification message to the user
+         * @param {string} message - The message to display
+         * @param {string} type - The type of notification (success, error, info)
+         */
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById("notification");
+            
+            // Set message and type
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            
+            // Show notification
+            notification.classList.add("show");
+            
+            // Log the notification as an audit activity
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (user) {
+                logActivity(type === 'error' ? 'error' : 'info', 'System', `Notification: ${message}`);
+            }
+            
+            // Hide notification after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove("show");
+            }, 3000);
+        }
+        
+        // ===== SESSION MANAGEMENT =====
+        /**
+         * Checks if user is already logged in and redirects to dashboard
+         */
+        function checkExistingSession() {
+            const currentUser = localStorage.getItem("currentUser");
+            
+            if (currentUser) {
+                const user = JSON.parse(currentUser);
+                showNotification(`Selamat datang kembali, ${user.fullName}! Mengarahkan ke dashboard...`, "success");
+                
+                // Redirect to dashboard after a short delay
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 1500);
+            }
+        }
+        
+        // ===== INITIALIZATION =====
+        /**
+         * Initializes the page when DOM is fully loaded
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for existing user session
+            checkExistingSession();
+            
+            // Add keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                // Enter key on the main button
+                if (e.key === 'Enter' && document.activeElement === document.querySelector('.btn')) {
+                    window.location.href = "login.html";
+                }
+            });
+            
+            // Log page access if audit trail is available
+            logActivity('view', 'Landing Page', 'User accessed landing page');
+        });
+        
+        // ===== ERROR HANDLING =====
+        /**
+         * Global error handler for uncaught errors
+         */
+        window.addEventListener('error', function(e) {
+            console.error('An error occurred:', e.error);
+            showNotification('Terjadi kesalahan. Silakan refresh halaman.', 'error');
+        });
+        
+        // ===== PERFORMANCE MONITORING =====
+        /**
+         * Logs page load performance metrics
+         */
+        window.addEventListener('load', function() {
+            if (window.performance) {
+                const perfData = window.performance.timing;
+                const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
+                console.log(`Page loaded in ${pageLoadTime}ms`);
+            }
+        });
+    </script>
+</body>
+</html>
